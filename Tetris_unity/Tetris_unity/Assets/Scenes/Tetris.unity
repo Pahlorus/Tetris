@@ -389,7 +389,7 @@ MonoBehaviour:
     m_BestFit: 1
     m_MinSize: 10
     m_MaxSize: 40
-    m_Alignment: 0
+    m_Alignment: 4
     m_AlignByGeometry: 0
     m_RichText: 1
     m_HorizontalOverflow: 0
@@ -451,6 +451,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _text: {fileID: 806111831}
+  _colorsArray:
+  - serializedVersion: 2
+    rgba: 4280039389
+  - serializedVersion: 2
+    rgba: 4279928554
+  - serializedVersion: 2
+    rgba: 4294156895
+  - serializedVersion: 2
+    rgba: 4282822713
+  - serializedVersion: 2
+    rgba: 4260110387
+  - serializedVersion: 2
+    rgba: 4291894709
+  - serializedVersion: 2
+    rgba: 4245479145
 --- !u!4 &1467020549
 Transform:
   m_ObjectHideFlags: 0
