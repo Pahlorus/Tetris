@@ -14,58 +14,91 @@ namespace GameCore
         private Text _text;
         [SerializeField]
         Color32[] _colorsArray;
-
-        private int _glassfulHigh = 21;
+        private int _glassfulHigh = 23;
         private int _glassfulWidth = 10;
-        private int _nextTetraminoIndex;
-        private float _repeatTime;
-        private float _currentTime;
+        private int _step = 1;
+        private int _tetraminoIndex;
+        private float _tickTime = 1f;
+        private float _elapsedTime = 0f;
         private bool[,] _glassful;
-
-        Tetramino _activeTetramino;
-        Tetramino[] _tetraminoArray;
-        TetraminoTypes _tetraminoTypes;
-        System.Random _random;
+        private Vector2Int _down;
+        private Vector2Int _left;
+        private Vector2Int _right;
+        private Vector2Int _startPosition;
+        private Tetramino _activeTetramino;
+        private Tetramino _nextTetramino;
+        private Tetramino[] _tetraminoArray;
+        private TetraminoTypes _tetraminoTypes;
+        private System.Random _random;
 
 
         void Awake()
         {
-            enabled = true;
+            _down.y = _step;
+            _left.x = -_step;
+            _right.x = _step;
+            _startPosition.y = 4* _step;
             _tetraminoTypes = new TetraminoTypes();
             _colorsArray = new Color32[_tetraminoTypes.TetraminoTypesArray.Length];
-            /*  _tetraminoArray = new Tetramino[_tetraminoTypes.TetraminoTypesArray.Length];
-              for (int i =0; i< _tetraminoTypes.TetraminoTypesArray.Length; i++)
-              {
-                  _tetraminoArray[i] = new Tetramino(_tetraminoTypes.TetraminoTypesArray[i], _tetraminoTypes.TetraminoShiftVectorsArray[i], _colorsArray[i]);
-              }*/
             _glassful = new bool[_glassfulHigh, _glassfulWidth];
-            NextTetraminoIndexGenerate();
-            InsertNewTetramino(_nextTetraminoIndex);
-            TestDraw();
-
+            GameStart();
         }
 
+        public void GameStart()
+        {
+            TetraminoIndexGenerate();
+            _nextTetramino = new Tetramino(_tetraminoTypes.TetraminoTypesArray[_tetraminoIndex], _tetraminoTypes.TetraminoShiftVectorsArray[_tetraminoIndex], _colorsArray[_tetraminoIndex]);
+            NewTetraminoCreate();
+            GameRun();
+        }
 
-        void NextTetraminoIndexGenerate()
+        public void GameRun()
+        {
+            enabled = true;
+        }
+
+        public void GameStop()
+        {
+            enabled = false;
+        }
+
+        void TetraminoIndexGenerate()
         {
             _random = new System.Random();
-            _nextTetraminoIndex = _random.Next(_tetraminoTypes.TetraminoTypesArray.Length);
+            _tetraminoIndex = _random.Next(_tetraminoTypes.TetraminoTypesArray.Length);
         }
-        // Временно.
-        void InsertNewTetramino(int tetraminoIndex)
+
+        void NewTetraminoCreate()
         {
-            _activeTetramino = new Tetramino(_tetraminoTypes.TetraminoTypesArray[tetraminoIndex], _tetraminoTypes.TetraminoShiftVectorsArray[tetraminoIndex], _colorsArray[tetraminoIndex]);
-            int x = _activeTetramino.Pos.x;
-            int y = _activeTetramino.Pos.y;
+            TetraminoIndexGenerate();
+            _activeTetramino = _nextTetramino;
+            _nextTetramino = new Tetramino(_tetraminoTypes.TetraminoTypesArray[_tetraminoIndex], _tetraminoTypes.TetraminoShiftVectorsArray[_tetraminoIndex], _colorsArray[_tetraminoIndex]);
+
+            if (IsMoveable(_activeTetramino, _startPosition))
+            {
+                TetraminoMove(_activeTetramino, _startPosition);
+                TetraminoInsert(_nextTetramino);
+            }
+            else
+            {
+                GameStop();
+            }
+        }
+
+        void TetraminoInsert(Tetramino activeTetramino)
+        {
+            Vector2Int Pos = activeTetramino.Pos;
             for (int i = 0; i < 4; i++)
             {
                 for (int j = 0; j < 4; j++)
                 {
-                    _glassful[j + y, i + x] = _activeTetramino.TetraminoExemplar[j, i];
+                    if (activeTetramino.TetraminoExemplar[j, i])
+                    {
+                        _glassful[Pos.y + j, Pos.x + i] = activeTetramino.TetraminoExemplar[j, i];
+                    }
                 }
             }
         }
-
 
         // Временно.
         void TestDraw()
@@ -82,32 +115,19 @@ namespace GameCore
             _text.text = text;
         }
 
-
-        void Rotate(Tetramino activeTetramino)
+        void TetraminoRotate(Tetramino activeTetramino)
         {
-            TestDelete(activeTetramino);
+            TetraminoDelete(activeTetramino);
             int numberRotate = activeTetramino.NumberRotate;
             activeTetramino.Rotate();
-            Shift(activeTetramino, numberRotate);
-            /*Vector2Int Pos;
-            Pos = _tetraminoArray[2].Pos;
-            for (int i = 0; i < 4; i++)
-            {
-                for (int j = 0; j < 4; j++)
-                {
-                    if (_tetraminoArray[2].Tetranino[j, i])
-                    {
-                        _glassful[j + Pos.y, i + Pos.x] = _tetraminoArray[2].Tetranino[j, i];
-                    }
-                }
-            }*/
-            // TestDraw();
-
+            ShiftAfterRotate(activeTetramino, numberRotate);
+            TetraminoInsert(activeTetramino);
+            //TestDraw();
         }
-        void TestDelete(Tetramino activeTetramino)
+
+        void TetraminoDelete(Tetramino activeTetramino)
         {
-            Vector2Int Pos;
-            Pos = activeTetramino.Pos;
+            Vector2Int Pos = activeTetramino.Pos;
             for (int i = 0; i < 4; i++)
             {
                 for (int j = 0; j < 4; j++)
@@ -120,153 +140,168 @@ namespace GameCore
             }
         }
 
-
-
-        public event EventHandler OnCollision;
-
-        // Use this for initialization
-
-        void CheckMoveable()
+        bool IsRotatable(Tetramino activeTetramino)
         {
-
-        }
-
-        void CheckRotatable()
-        {
-
-        }
-
-        void CheckCollision()
-        {
-
-        }
-
-        void CheckFillingLine()
-        {
-
-        }
-
-        void Shift(Tetramino activeTetramino, int numberRotate)
-        {
-            TestDelete(activeTetramino);
-            Vector2Int Pos = activeTetramino.Pos; ;
-            Vector2Int newPos = Pos + activeTetramino.ShiftVector[numberRotate];
-
-            for (int i = 0; i < 4; i++)
-            {
-                for (int j = 0; j < 4; j++)
-                {
-                    if (activeTetramino.TetraminoExemplar[j, i])
-                    {
-                        _glassful[j + newPos.y, i + newPos.x] = activeTetramino.TetraminoExemplar[j, i];
-                    }
-                }
-            }
-            activeTetramino.Pos = newPos;
-            TestDraw();
-        }
-
-        void TetraminoFall(Tetramino activeTetramino)
-        {
-            TestDelete(activeTetramino);
+            TetraminoDelete(activeTetramino);
+            int numberRotate = activeTetramino.NumberRotate;
+            activeTetramino.Rotate();
+            ShiftAfterRotate(activeTetramino, numberRotate);
+            bool result = true;
             Vector2Int Pos = activeTetramino.Pos;
-            Pos.y = Pos.y + 1;
             for (int i = 0; i < 4; i++)
             {
                 for (int j = 0; j < 4; j++)
                 {
-                    if (activeTetramino.TetraminoExemplar[j, i])
+                    if (!activeTetramino.TetraminoExemplar[j, i])
                     {
-                        _glassful[j + Pos.y, i + Pos.x] = activeTetramino.TetraminoExemplar[j, i];
+                        continue;
+                    }
+                    if ((j + Pos.y >= _glassfulHigh || i + Pos.x >= _glassfulWidth || i + Pos.x < 0 || _glassful[j + Pos.y, i + Pos.x]))
+                    {
+                        result = false;
                     }
                 }
             }
-            activeTetramino.Pos = Pos;
-            TestDraw();
+            numberRotate = activeTetramino.NumberRotate;
+            activeTetramino.Rotate();
+            ShiftAfterRotate(activeTetramino, numberRotate);
+            numberRotate = activeTetramino.NumberRotate;
+            activeTetramino.Rotate();
+            ShiftAfterRotate(activeTetramino, numberRotate);
+            numberRotate = activeTetramino.NumberRotate;
+            activeTetramino.Rotate();
+            ShiftAfterRotate(activeTetramino, numberRotate);
+            TetraminoInsert(activeTetramino);
+            return result;
         }
 
-        void Move(int numberRotation, Vector2Int[] shiftVector)
-        {/*
-        TestDelete();
-        Vector2Int Pos;
-        Vector2Int newPos;
-        Pos = _tetraminoArray[2].Pos;
-        if (direction == 2)
+        bool IsMoveable(Tetramino activeTetramino, Vector2Int direct)
         {
-            newPos = Pos + shiftVector[numberRotation];
-        }
-        if (direction == -2)
-        {
-            Pos.y = Pos.y - 1;
-        }
-        if (direction == -1)
-        {
-            Pos.x = Pos.x - 1;
-        }
-        if (direction == 1)
-        {
-            Pos.x = Pos.x + 1;
-        }
-
-        for (int i = 0; i < 4; i++)
-        {
-            for (int j = 0; j < 4; j++)
+            TetraminoDelete(activeTetramino);
+            bool result = true;
+            Vector2Int Pos;
+            Pos = activeTetramino.Pos;
+            for (int i = 0; i < 4; i++)
             {
-                if (_tetraminoArray[2].Tetranino[j, i])
+                for (int j = 0; j < 4; j++)
                 {
-                    _glassful[j + Pos.y, i + Pos.x] = _tetraminoArray[2].Tetranino[j, i];
+                    if (!activeTetramino.TetraminoExemplar[j, i])
+                    {
+                        continue;
+                    }
+                    if ((j + Pos.y + direct.y >= _glassfulHigh || i + Pos.x + direct.x >= _glassfulWidth || i + Pos.x + direct.x < 0 || _glassful[j + Pos.y + direct.y, i + Pos.x + direct.x]))
+                    {
+                        result = false;
+                    }
+                }
+            }
+            TetraminoInsert(activeTetramino);
+            return result;
+        }
+
+        void LineEraseAndShiftGlassfull(int line)
+        {
+            for (int j = line; j >= _startPosition.y; j--)
+            {
+                for (int i = 0; i < _glassfulWidth; i++)
+                {
+                    _glassful[j, i] = _glassful[j - 1, i];
                 }
             }
         }
-        _tetraminoArray[2].Pos = Pos;
-        TestDraw();*/
-        }
 
-
-
-        void TetraminoDockAndDestroy()
+        void CheckFillingLineAndErase()
         {
-            //Tetramino p = new OTetramino();
+            bool isFillingLine;
+            for (int j = 3; j < _glassfulHigh; j++)
+            {
+                isFillingLine = true;
+                for (int i = 0; i < _glassfulWidth; i++)
+                {
+                    if (!_glassful[j, i])
+                    {
+                        isFillingLine = false;
+                        break;
+                    }
+                }
 
+                if (isFillingLine)
+                {
+                    LineEraseAndShiftGlassfull(j);
+                }
+            }
         }
 
-        void Start()
+        void ShiftAfterRotate(Tetramino activeTetramino, int numberRotate)
         {
-            _currentTime = _repeatTime * 1000f;
-
+            Vector2Int direct = activeTetramino.ShiftVector[numberRotate];
+            activeTetramino.Move(direct);
         }
 
-        // Update is called once per frame
+        void TetraminoMove(Tetramino activeTetramino, Vector2Int direct)
+        {
+            TetraminoDelete(activeTetramino);
+            activeTetramino.Move(direct);
+            TetraminoInsert(activeTetramino);
+        }
+
+        void Tick()
+        {
+            if (IsMoveable(_activeTetramino, _down))
+            {
+                TetraminoMove(_activeTetramino, _down);
+            }
+            else
+            {
+                CheckFillingLineAndErase();
+                NewTetraminoCreate();
+            }
+        }
+
         void Update()
         {
 
             if (Input.GetKeyDown(KeyCode.DownArrow))
             {
-                //Move(2);
+                if (IsMoveable(_activeTetramino, _down))
+                {
+                    TetraminoMove(_activeTetramino, _down);
+                }
+
             }
             if (Input.GetKeyDown(KeyCode.RightArrow))
             {
-                //Move(1);
+                if (IsMoveable(_activeTetramino, _right))
+                {
+                    TetraminoMove(_activeTetramino, _right);
+                }
+
             }
             if (Input.GetKeyDown(KeyCode.LeftArrow))
             {
-                //Move(-1);
+                if (IsMoveable(_activeTetramino, _left))
+                {
+                    TetraminoMove(_activeTetramino, _left);
+                }
+
             }
             if (Input.GetKeyDown(KeyCode.Space))
             {
-                Rotate(_activeTetramino);
+                if (IsRotatable(_activeTetramino))
+                {
+                    TetraminoRotate(_activeTetramino);
+                }
+
             }
 
-            _currentTime -= Time.deltaTime;
-            if (_currentTime <= 0)
+            _elapsedTime += Time.deltaTime;
+            if (_elapsedTime >= _tickTime)
             {
-                TetraminoFall(_activeTetramino);
-                _currentTime = _repeatTime * 1000f;
-
-
-
+                _elapsedTime -= _tickTime;
+                Tick();
             }
-        }
 
+            TestDraw();
+        }
     }
 }
