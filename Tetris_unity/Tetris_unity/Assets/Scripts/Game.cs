@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 namespace GameCore
 {
-    public class Game : MonoBehaviour
+    class Game : MonoBehaviour
     {
 
         [SerializeField]
@@ -100,31 +100,6 @@ namespace GameCore
             }
         }
 
-        // Временно.
-        void TestDraw()
-        {
-            string text = string.Empty;
-            for (int j = 0; j < _glassfulHigh; j++)
-            {
-                for (int i = 0; i < _glassfulWidth; i++)
-                {
-                    text = text + Convert.ToInt32(_glassful[j, i]).ToString() + "  ";
-                }
-                text = text + "\n";
-            }
-            _text.text = text;
-        }
-
-        void TetraminoRotate(Tetramino activeTetramino)
-        {
-            TetraminoDelete(activeTetramino);
-            int numberRotate = activeTetramino.NumberRotate;
-            activeTetramino.Rotate();
-            ShiftAfterRotate(activeTetramino, numberRotate);
-            TetraminoInsert(activeTetramino);
-            //TestDraw();
-        }
-
         void TetraminoDelete(Tetramino activeTetramino)
         {
             Vector2Int Pos = activeTetramino.Pos;
@@ -140,12 +115,35 @@ namespace GameCore
             }
         }
 
+        void TetraminoMove(Tetramino activeTetramino, Vector2Int direct)
+        {
+            TetraminoDelete(activeTetramino);
+            activeTetramino.Move(direct);
+            TetraminoInsert(activeTetramino);
+        }
+
+        void TetraminoRotate(Tetramino activeTetramino)
+        {
+            TetraminoDelete(activeTetramino);
+            int numberRotate = activeTetramino.NumberRotate;
+            activeTetramino.Rotate();
+            TetraminoShiftAfterRotate(activeTetramino, numberRotate);
+            TetraminoInsert(activeTetramino);
+            //TestDraw();
+        }
+
+        void TetraminoShiftAfterRotate(Tetramino activeTetramino, int numberRotate)
+        {
+            Vector2Int direct = activeTetramino.ShiftVector[numberRotate];
+            activeTetramino.Move(direct);
+        }
+
         bool IsRotatable(Tetramino activeTetramino)
         {
             TetraminoDelete(activeTetramino);
             int numberRotate = activeTetramino.NumberRotate;
             activeTetramino.Rotate();
-            ShiftAfterRotate(activeTetramino, numberRotate);
+            TetraminoShiftAfterRotate(activeTetramino, numberRotate);
             bool result = true;
             Vector2Int Pos = activeTetramino.Pos;
             for (int i = 0; i < 4; i++)
@@ -164,13 +162,13 @@ namespace GameCore
             }
             numberRotate = activeTetramino.NumberRotate;
             activeTetramino.Rotate();
-            ShiftAfterRotate(activeTetramino, numberRotate);
+            TetraminoShiftAfterRotate(activeTetramino, numberRotate);
             numberRotate = activeTetramino.NumberRotate;
             activeTetramino.Rotate();
-            ShiftAfterRotate(activeTetramino, numberRotate);
+            TetraminoShiftAfterRotate(activeTetramino, numberRotate);
             numberRotate = activeTetramino.NumberRotate;
             activeTetramino.Rotate();
-            ShiftAfterRotate(activeTetramino, numberRotate);
+            TetraminoShiftAfterRotate(activeTetramino, numberRotate);
             TetraminoInsert(activeTetramino);
             return result;
         }
@@ -232,19 +230,6 @@ namespace GameCore
             }
         }
 
-        void ShiftAfterRotate(Tetramino activeTetramino, int numberRotate)
-        {
-            Vector2Int direct = activeTetramino.ShiftVector[numberRotate];
-            activeTetramino.Move(direct);
-        }
-
-        void TetraminoMove(Tetramino activeTetramino, Vector2Int direct)
-        {
-            TetraminoDelete(activeTetramino);
-            activeTetramino.Move(direct);
-            TetraminoInsert(activeTetramino);
-        }
-
         void Tick()
         {
             if (IsMoveable(_activeTetramino, _down))
@@ -256,6 +241,21 @@ namespace GameCore
                 CheckFillingLineAndErase();
                 NewTetraminoCreate();
             }
+        }
+
+        // Временно.
+        void TestDraw()
+        {
+            string text = string.Empty;
+            for (int j = 0; j < _glassfulHigh; j++)
+            {
+                for (int i = 0; i < _glassfulWidth; i++)
+                {
+                    text = text + Convert.ToInt32(_glassful[j, i]).ToString() + "  ";
+                }
+                text = text + "\n";
+            }
+            _text.text = text;
         }
 
         void Update()
