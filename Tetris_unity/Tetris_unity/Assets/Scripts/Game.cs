@@ -77,7 +77,6 @@ namespace GameCore
             if (IsMoveable(_activeTetramino, _startPosition))
             {
                 TetraminoMove(_activeTetramino, _startPosition);
-                TetraminoInsert(_nextTetramino);
             }
             else
             {
@@ -117,19 +116,14 @@ namespace GameCore
 
         void TetraminoMove(Tetramino activeTetramino, Vector2Int direct)
         {
-            TetraminoDelete(activeTetramino);
             activeTetramino.Move(direct);
-            TetraminoInsert(activeTetramino);
         }
 
         void TetraminoRotate(Tetramino activeTetramino)
         {
-            TetraminoDelete(activeTetramino);
             int numberRotate = activeTetramino.NumberRotate;
             activeTetramino.Rotate();
             TetraminoShiftAfterRotate(activeTetramino, numberRotate);
-            TetraminoInsert(activeTetramino);
-            //TestDraw();
         }
 
         void TetraminoShiftAfterRotate(Tetramino activeTetramino, int numberRotate)
@@ -138,9 +132,30 @@ namespace GameCore
             activeTetramino.Move(direct);
         }
 
+        bool IsCellHaveBlock(int y, int x)
+        {
+            bool isCheckActiveTetraminoBlocks = false;
+            bool isCheckNextTetraminoBlocks = false;
+            var posActiveTetramino = _activeTetramino.Pos;
+            var posNextTetramino = _nextTetramino.Pos;
+
+            if ((y>=posActiveTetramino.y & y < posActiveTetramino.y + 4 & x >=  posActiveTetramino.x & x < posActiveTetramino.x + 4) )
+            {
+                isCheckActiveTetraminoBlocks = _activeTetramino.TetraminoExemplar[y - posActiveTetramino.y, x - posActiveTetramino.x];
+            }
+            // Временно, для отображения следующей фигуры
+            if ((y >= posNextTetramino.y & y < posNextTetramino.y + 4 & x >= posNextTetramino.x & x < posNextTetramino.x + 4))
+            {
+                isCheckNextTetraminoBlocks = _nextTetramino.TetraminoExemplar[y - posNextTetramino.y, x - posNextTetramino.x];
+            }
+
+
+            return _glassful[y, x] || isCheckActiveTetraminoBlocks || isCheckNextTetraminoBlocks;
+        }
+
+
         bool IsRotatable(Tetramino activeTetramino)
         {
-            TetraminoDelete(activeTetramino);
             int numberRotate = activeTetramino.NumberRotate;
             activeTetramino.Rotate();
             TetraminoShiftAfterRotate(activeTetramino, numberRotate);
@@ -169,13 +184,11 @@ namespace GameCore
             numberRotate = activeTetramino.NumberRotate;
             activeTetramino.Rotate();
             TetraminoShiftAfterRotate(activeTetramino, numberRotate);
-            TetraminoInsert(activeTetramino);
             return result;
         }
 
         bool IsMoveable(Tetramino activeTetramino, Vector2Int direct)
         {
-            TetraminoDelete(activeTetramino);
             bool result = true;
             Vector2Int Pos;
             Pos = activeTetramino.Pos;
@@ -193,7 +206,6 @@ namespace GameCore
                     }
                 }
             }
-            TetraminoInsert(activeTetramino);
             return result;
         }
 
@@ -238,12 +250,12 @@ namespace GameCore
             }
             else
             {
+                TetraminoInsert(_activeTetramino);
                 CheckFillingLineAndErase();
                 NewTetraminoCreate();
             }
         }
 
-        // Временно.
         void TestDraw()
         {
             string text = string.Empty;
@@ -251,12 +263,17 @@ namespace GameCore
             {
                 for (int i = 0; i < _glassfulWidth; i++)
                 {
-                    text = text + Convert.ToInt32(_glassful[j, i]).ToString() + "  ";
+                    if(IsCellHaveBlock(j, i))
+                        text = text + "0" + " ";
+                    else
+                        text = text + ".." + " ";
                 }
                 text = text + "\n";
             }
             _text.text = text;
         }
+
+
 
         void Update()
         {
