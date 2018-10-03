@@ -128,7 +128,7 @@ namespace GameCore
             {
                 isCheckActiveTetraminoBlocks = _activeTetramino.TetraminoExemplar[y - posActiveTetramino.y, x - posActiveTetramino.x];
             }
-            // Временно, для отображения следующей фигуры
+            // TODO: Временно, для отображения следующей фигуры
             if ((y >= posNextTetramino.y & y < posNextTetramino.y + 4 & x >= posNextTetramino.x & x < posNextTetramino.x + 4))
             {
                 isCheckNextTetraminoBlocks = _nextTetramino.TetraminoExemplar[y - posNextTetramino.y, x - posNextTetramino.x];
@@ -241,6 +241,7 @@ namespace GameCore
             }
         }
 
+        // TODO: Временно.
         void TestDraw()
         {
             string text = string.Empty;
