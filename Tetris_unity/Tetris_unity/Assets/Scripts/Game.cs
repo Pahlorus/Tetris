@@ -37,7 +37,7 @@ namespace GameCore
             _down.y = _step;
             _left.x = -_step;
             _right.x = _step;
-            _startPosition.y = 4* _step;
+            _startPosition.y = 4 * _step;
             _tetraminoTypes = new TetraminoTypes();
             _colorsArray = new Color32[_tetraminoTypes.TetraminoTypesArray.Length];
             _glassful = new bool[_glassfulHigh, _glassfulWidth];
@@ -99,21 +99,6 @@ namespace GameCore
             }
         }
 
-        void TetraminoDelete(Tetramino activeTetramino)
-        {
-            Vector2Int Pos = activeTetramino.Pos;
-            for (int i = 0; i < 4; i++)
-            {
-                for (int j = 0; j < 4; j++)
-                {
-                    if (activeTetramino.TetraminoExemplar[j, i])
-                    {
-                        _glassful[j + Pos.y, i + Pos.x] = false;
-                    }
-                }
-            }
-        }
-
         void TetraminoMove(Tetramino activeTetramino, Vector2Int direct)
         {
             activeTetramino.Move(direct);
@@ -139,7 +124,7 @@ namespace GameCore
             var posActiveTetramino = _activeTetramino.Pos;
             var posNextTetramino = _nextTetramino.Pos;
 
-            if ((y>=posActiveTetramino.y & y < posActiveTetramino.y + 4 & x >=  posActiveTetramino.x & x < posActiveTetramino.x + 4) )
+            if ((y >= posActiveTetramino.y & y < posActiveTetramino.y + 4 & x >= posActiveTetramino.x & x < posActiveTetramino.x + 4))
             {
                 isCheckActiveTetraminoBlocks = _activeTetramino.TetraminoExemplar[y - posActiveTetramino.y, x - posActiveTetramino.x];
             }
@@ -263,7 +248,7 @@ namespace GameCore
             {
                 for (int i = 0; i < _glassfulWidth; i++)
                 {
-                    if(IsCellHaveBlock(j, i))
+                    if (IsCellHaveBlock(j, i))
                         text = text + "0" + " ";
                     else
                         text = text + ".." + " ";
@@ -273,19 +258,21 @@ namespace GameCore
             _text.text = text;
         }
 
-
-
         void Update()
         {
 
             if (Input.GetKeyDown(KeyCode.DownArrow))
             {
-                if (IsMoveable(_activeTetramino, _down))
-                {
-                    TetraminoMove(_activeTetramino, _down);
-                }
-
+                _tickTime = 0.05f;
+                _elapsedTime = 0.05f;
             }
+
+            if (Input.GetKeyUp(KeyCode.DownArrow))
+            {
+                _tickTime = 1f;
+                _elapsedTime = 0f;
+            }
+
             if (Input.GetKeyDown(KeyCode.RightArrow))
             {
                 if (IsMoveable(_activeTetramino, _right))
