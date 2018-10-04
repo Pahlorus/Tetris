@@ -14,7 +14,6 @@ namespace GameCore
         Cw270 = 3,
     }
 
-
     class TetraminoTypes
     {
         private bool[,] _otetramino;
@@ -45,17 +44,13 @@ namespace GameCore
             _otetramino[1, 2] = true;
             _otetramino[2, 1] = true;
             _otetramino[2, 2] = true;
-            _otettraminoShiftVectors = new Vector2Int[4];
-            _otettraminoShiftVectors[0].x = 0;
-            _otettraminoShiftVectors[0].y = 0;
-            _otettraminoShiftVectors[1].x = -1;
-            _otettraminoShiftVectors[1].y = 0;
-            _otettraminoShiftVectors[2].x = 0;
-            _otettraminoShiftVectors[2].y = -1;
-            _otettraminoShiftVectors[3].x = 1;
-            _otettraminoShiftVectors[3].y = -1;
-
-
+            _otettraminoShiftVectors = new Vector2Int[4]
+            {
+                new Vector2Int(0, 1),
+                new Vector2Int(-1, 0),
+                new Vector2Int(0, -1),
+                new Vector2Int(1, 0)
+            };
             #endregion
             #region Itetramino
             _itetramino = new bool[4, 4];
@@ -63,15 +58,13 @@ namespace GameCore
             _itetramino[1, 1] = true;
             _itetramino[1, 2] = true;
             _itetramino[1, 3] = true;
-            _itettraminoShiftVectors = new Vector2Int[4];
-            _itettraminoShiftVectors[0].x = -1;
-            _itettraminoShiftVectors[0].y = 0;
-            _itettraminoShiftVectors[1].x = -1;
-            _itettraminoShiftVectors[1].y = 0;
-            _itettraminoShiftVectors[2].x = 1;
-            _itettraminoShiftVectors[2].y = -2;
-            _itettraminoShiftVectors[3].x = 1;
-            _itettraminoShiftVectors[3].y = 2;
+            _itettraminoShiftVectors = new Vector2Int[4]
+            {
+                new Vector2Int(-1, 0),
+                new Vector2Int(-1, 0),
+                new Vector2Int(1, -2),
+                new Vector2Int(1, 2)
+            };
             #endregion
             #region Stetramino
             _stetramino = new bool[4, 4];
@@ -79,15 +72,13 @@ namespace GameCore
             _stetramino[1, 3] = true;
             _stetramino[2, 1] = true;
             _stetramino[2, 2] = true;
-            _stettraminoShiftVectors = new Vector2Int[4];
-            _stettraminoShiftVectors[0].x = -1;
-            _stettraminoShiftVectors[0].y = 1;
-            _stettraminoShiftVectors[1].x = 0;
-            _stettraminoShiftVectors[1].y = -1;
-            _stettraminoShiftVectors[2].x = 0;
-            _stettraminoShiftVectors[2].y = 0;
-            _stettraminoShiftVectors[3].x = 1;
-            _stettraminoShiftVectors[3].y = 0;
+            _stettraminoShiftVectors = new Vector2Int[4]
+            {
+                new Vector2Int(-1, 1),
+                new Vector2Int(0, -1),
+                new Vector2Int(0, 0),
+                new Vector2Int(1, 0)
+            };
             #endregion
             #region Ztetramino
             _ztetramino = new bool[4, 4];
@@ -95,15 +86,13 @@ namespace GameCore
             _ztetramino[1, 2] = true;
             _ztetramino[2, 2] = true;
             _ztetramino[2, 3] = true;
-            _ztettraminoShiftVectors = new Vector2Int[4];
-            _ztettraminoShiftVectors[0].x = -1;
-            _ztettraminoShiftVectors[0].y = 1;
-            _ztettraminoShiftVectors[1].x = 0;
-            _ztettraminoShiftVectors[1].y = -1;
-            _ztettraminoShiftVectors[2].x = 0;
-            _ztettraminoShiftVectors[2].y = 0;
-            _ztettraminoShiftVectors[3].x = 1;
-            _ztettraminoShiftVectors[3].y = 0;
+            _ztettraminoShiftVectors = new Vector2Int[4]
+            {
+                new Vector2Int(-1, 1),
+                new Vector2Int(0, -1),
+                new Vector2Int(0, 0),
+                new Vector2Int(1, 0)
+            };
             #endregion
             #region Ltetramino
             _ltetramino = new bool[4, 4];
@@ -111,15 +100,13 @@ namespace GameCore
             _ltetramino[1, 2] = true;
             _ltetramino[1, 3] = true;
             _ltetramino[2, 1] = true;
-            _ltettraminoShiftVectors = new Vector2Int[4];
-            _ltettraminoShiftVectors[0].x = -1;
-            _ltettraminoShiftVectors[0].y = 1;
-            _ltettraminoShiftVectors[1].x = -1;
-            _ltettraminoShiftVectors[1].y = -1;
-            _ltettraminoShiftVectors[2].x = 1;
-            _ltettraminoShiftVectors[2].y = -1;
-            _ltettraminoShiftVectors[3].x = 1;
-            _ltettraminoShiftVectors[3].y = 1;
+            _ltettraminoShiftVectors = new Vector2Int[4]
+            {
+                new Vector2Int(-1, 1),
+                new Vector2Int(-1, -1),
+                new Vector2Int(1, -1),
+                new Vector2Int(1, 1)
+            };
             #endregion
             #region Jtetramino
             _jtetramino = new bool[4, 4];
@@ -127,15 +114,13 @@ namespace GameCore
             _jtetramino[1, 2] = true;
             _jtetramino[1, 3] = true;
             _jtetramino[2, 3] = true;
-            _jtettraminoShiftVectors = new Vector2Int[4];
-            _jtettraminoShiftVectors[0].x = -1;
-            _jtettraminoShiftVectors[0].y = 1;
-            _jtettraminoShiftVectors[1].x = -1;
-            _jtettraminoShiftVectors[1].y = -1;
-            _jtettraminoShiftVectors[2].x = 1;
-            _jtettraminoShiftVectors[2].y = -1;
-            _jtettraminoShiftVectors[3].x = 1;
-            _jtettraminoShiftVectors[3].y = 1;
+            _jtettraminoShiftVectors = new Vector2Int[4]
+            {
+                new Vector2Int(-1, 1),
+                new Vector2Int(-1, -1),
+                new Vector2Int(1, -1),
+                new Vector2Int(1, 1)
+            };
             #endregion
             #region Ttetramino
             _ttetramino = new bool[4, 4];
@@ -143,15 +128,13 @@ namespace GameCore
             _ttetramino[1, 2] = true;
             _ttetramino[1, 3] = true;
             _ttetramino[2, 2] = true;
-            _ttettraminoShiftVectors = new Vector2Int[4];
-            _ttettraminoShiftVectors[0].x = -1;
-            _ttettraminoShiftVectors[0].y = 1;
-            _ttettraminoShiftVectors[1].x = -1;
-            _ttettraminoShiftVectors[1].y = -1;
-            _ttettraminoShiftVectors[2].x = 1;
-            _ttettraminoShiftVectors[2].y = -1;
-            _ttettraminoShiftVectors[3].x = 1;
-            _ttettraminoShiftVectors[3].y = 1;
+            _ttettraminoShiftVectors = new Vector2Int[4]
+            {
+                new Vector2Int(-1, 1),
+                new Vector2Int(-1, -1),
+                new Vector2Int(1, -1),
+                new Vector2Int(1, 1)
+            };
             #endregion
 
             _tetraminoTypesArray[0] = _otetramino;

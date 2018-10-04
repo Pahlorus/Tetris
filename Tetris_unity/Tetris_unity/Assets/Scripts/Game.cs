@@ -30,8 +30,6 @@ namespace GameCore
         private Tetramino[] _tetraminoArray;
         private TetraminoTypes _tetraminoTypes;
         private Rotation _rotation;
-        private System.Random _random;
-
 
         void Awake()
         {
@@ -48,8 +46,7 @@ namespace GameCore
         public void GameStart()
         {
             TetraminoIndexGenerate();
-            _nextTetramino = new Tetramino(_tetraminoTypes.TetraminoTypesArray[3], _tetraminoTypes.TetraminoShiftVectorsArray[3], _colorsArray[_tetraminoIndex]);
-            //_nextTetramino = new Tetramino(_tetraminoTypes.TetraminoTypesArray[_tetraminoIndex], _tetraminoTypes.TetraminoShiftVectorsArray[_tetraminoIndex], _colorsArray[_tetraminoIndex]);
+            _nextTetramino = new Tetramino(_tetraminoTypes.TetraminoTypesArray[_tetraminoIndex], _tetraminoTypes.TetraminoShiftVectorsArray[_tetraminoIndex], _colorsArray[_tetraminoIndex]);
             NewTetraminoCreate();
             GameRun();
         }
@@ -66,16 +63,15 @@ namespace GameCore
 
         void TetraminoIndexGenerate()
         {
-            _random = new System.Random();
-            _tetraminoIndex = _random.Next(_tetraminoTypes.TetraminoTypesArray.Length);
+            _tetraminoIndex = UnityEngine.Random.Range(0, _tetraminoTypes.TetraminoTypesArray.Length);
         }
 
         void NewTetraminoCreate()
         {
             TetraminoIndexGenerate();
             _activeTetramino = _nextTetramino;
-            _nextTetramino = new Tetramino(_tetraminoTypes.TetraminoTypesArray[3], _tetraminoTypes.TetraminoShiftVectorsArray[3], _colorsArray[_tetraminoIndex]);
-            //_nextTetramino = new Tetramino(_tetraminoTypes.TetraminoTypesArray[_tetraminoIndex], _tetraminoTypes.TetraminoShiftVectorsArray[_tetraminoIndex], _colorsArray[_tetraminoIndex]);
+            _nextTetramino = new Tetramino(_tetraminoTypes.TetraminoTypesArray[_tetraminoIndex], _tetraminoTypes.TetraminoShiftVectorsArray[_tetraminoIndex], _colorsArray[_tetraminoIndex]);
+            _rotation = Rotation.Cw0;
 
             if (IsMoveable(_activeTetramino, _startPosition))
             {
@@ -107,21 +103,11 @@ namespace GameCore
             activeTetramino.Move(direct);
         }
 
-        /*void TetraminoRotate(Tetramino activeTetramino)
-        {
-            int numberRotate = activeTetramino.NumberRotate;
-            activeTetramino.Rotate();
-            TetraminoShiftAfterRotate(activeTetramino, numberRotate);
-        }*/
-
         void TetraminoRotate()
         {
             _rotation = (Rotation)(((int)_rotation + 1) % 4);
             TetraminoShiftAfterRotate(_activeTetramino, _rotation);
         }
-
-
-
 
         void TetraminoShiftAfterRotate(Tetramino activeTetramino, Rotation rotation)
         {
@@ -146,18 +132,13 @@ namespace GameCore
             {
                 isCheckNextTetraminoBlocks = _nextTetramino.TetraminoExemplar[y - posNextTetramino.y, x - posNextTetramino.x];
             }
-
-
-
             return _glassful[y, x] || isCheckActiveTetraminoBlocks || isCheckNextTetraminoBlocks;
         }
 
 
         bool IsRotatable(Tetramino activeTetramino)
         {
-          // Rotation numberRotate = _rotation;
             TetraminoRotate();
-            //TetraminoShiftAfterRotate(activeTetramino, numberRotate);
             bool result = true;
             Vector2Int Pos = activeTetramino.Pos;
             for (int i = 0; i < 4; i++)
@@ -174,15 +155,9 @@ namespace GameCore
                     }
                 }
             }
-            /*numberRotate = _rotation;
             TetraminoRotate();
-            TetraminoShiftAfterRotate(activeTetramino, numberRotate);
-            numberRotate = _rotation;
             TetraminoRotate();
-            TetraminoShiftAfterRotate(activeTetramino, numberRotate);
-            numberRotate = _rotation;
             TetraminoRotate();
-            TetraminoShiftAfterRotate(activeTetramino, numberRotate);*/
             return result;
         }
 
@@ -245,7 +220,7 @@ namespace GameCore
         {
             if (IsMoveable(_activeTetramino, _down))
             {
-               // TetraminoMove(_activeTetramino, _down);
+                TetraminoMove(_activeTetramino, _down);
             }
             else
             {
@@ -294,27 +269,26 @@ namespace GameCore
                 {
                     TetraminoMove(_activeTetramino, _right);
                 }
-
             }
+
             if (Input.GetKeyDown(KeyCode.LeftArrow))
             {
                 if (IsMoveable(_activeTetramino, _left))
                 {
                     TetraminoMove(_activeTetramino, _left);
                 }
-
             }
+
             if (Input.GetKeyDown(KeyCode.Space))
             {
-                /*if (IsRotatable(_activeTetramino))
+                if (IsRotatable(_activeTetramino))
                 {
                     TetraminoRotate();
-                }*/
-
-                TetraminoRotate();
+                }
             }
 
             _elapsedTime += Time.deltaTime;
+
             if (_elapsedTime >= _tickTime)
             {
                 _elapsedTime -= _tickTime;
