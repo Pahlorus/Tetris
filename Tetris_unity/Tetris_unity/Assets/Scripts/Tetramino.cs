@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -11,8 +12,10 @@ namespace GameCore
         private Color32 _tetraminoColor;
         private Vector2Int _tetraminoPos;
         private Vector2Int _tetraimnoInitialPos;
+
         private int _initialPosX = 3;
         private int _initialPosY = 0;
+        private int _size;
 
         private int _numberRotate;
 
@@ -23,6 +26,7 @@ namespace GameCore
             _tetraminoColor = color;
             _tetraminoPos.y = _initialPosY;
             _tetraminoPos.x = _initialPosX;
+            _size = 4;
         }
 
         public bool[,] TetraminoExemplar
@@ -46,12 +50,34 @@ namespace GameCore
             get { return _shiftVectors; }
         }
 
+        public bool this[int y, int x, Rotation rot]
+        {
+            get
+            {
+                var yy = y;
+                var xx = x;
+                
+                if (rot.HasFlag(Rotation.Cw90))
+                {
+                    yy = -x;
+                    xx = y;
+                }
+                if (rot.HasFlag(Rotation.Cw180))
+                {
+                    yy = -yy;
+                    xx = -xx;
+                }
+                return _tetramino[(yy + _size) % _size, (xx + _size) % _size];
+            }
+        }
+
+
         public int NumberRotate
         {
             get { return _numberRotate; }
         }
 
-        public void Rotate()
+        /*public void Rotate()
         {
             bool[,] _newTetramino = new bool[4, 4];
             for (int i = 3; i >= 0; --i)
@@ -70,9 +96,13 @@ namespace GameCore
             {
                 _numberRotate = 0;
             }
-        }
+        }*/
 
-        public void Move(Vector2Int direct)
+
+
+
+
+            public void Move(Vector2Int direct)
         {
             _tetraminoPos = _tetraminoPos + direct;
         }
