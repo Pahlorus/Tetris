@@ -1,8 +1,6 @@
 ﻿using System;
 using UnityEngine;
 
-
-
 namespace GameCore
 {
     [Flags]
@@ -30,13 +28,11 @@ namespace GameCore
         private Vector2Int[] _ltettraminoShiftVectors;
         private Vector2Int[] _jtettraminoShiftVectors;
         private Vector2Int[] _ttettraminoShiftVectors;
-        private bool[][,] _tetraminoTypesArray;
-        private Vector2Int[][] _tetraminoShiftVectorsArray;
 
         public TetraminoTypes()
         {
-            _tetraminoTypesArray = new bool[7][,];
-            _tetraminoShiftVectorsArray = new Vector2Int[7][];
+            TetraminoTypesArray = new bool[7][,];
+            TetraminoShiftVectorsArray = new Vector2Int[7][];
 
             #region Otetramino
             _otetramino = new bool[4, 4];
@@ -137,32 +133,27 @@ namespace GameCore
             };
             #endregion
 
-            _tetraminoTypesArray[0] = _otetramino;
-            _tetraminoTypesArray[1] = _itetramino;
-            _tetraminoTypesArray[2] = _stetramino;
-            _tetraminoTypesArray[3] = _ztetramino;
-            _tetraminoTypesArray[4] = _ltetramino;
-            _tetraminoTypesArray[5] = _jtetramino;
-            _tetraminoTypesArray[6] = _ttetramino;
+            TetraminoTypesArray[0] = _otetramino;
+            TetraminoTypesArray[1] = _itetramino;
+            TetraminoTypesArray[2] = _stetramino;
+            TetraminoTypesArray[3] = _ztetramino;
+            TetraminoTypesArray[4] = _ltetramino;
+            TetraminoTypesArray[5] = _jtetramino;
+            TetraminoTypesArray[6] = _ttetramino;
 
-            _tetraminoShiftVectorsArray[0] = _otettraminoShiftVectors;
-            _tetraminoShiftVectorsArray[1] = _itettraminoShiftVectors;
-            _tetraminoShiftVectorsArray[2] = _stettraminoShiftVectors;
-            _tetraminoShiftVectorsArray[3] = _ztettraminoShiftVectors;
-            _tetraminoShiftVectorsArray[4] = _ltettraminoShiftVectors;
-            _tetraminoShiftVectorsArray[5] = _jtettraminoShiftVectors;
-            _tetraminoShiftVectorsArray[6] = _ttettraminoShiftVectors;
+            TetraminoShiftVectorsArray[0] = _otettraminoShiftVectors;
+            TetraminoShiftVectorsArray[1] = _itettraminoShiftVectors;
+            TetraminoShiftVectorsArray[2] = _stettraminoShiftVectors;
+            TetraminoShiftVectorsArray[3] = _ztettraminoShiftVectors;
+            TetraminoShiftVectorsArray[4] = _ltettraminoShiftVectors;
+            TetraminoShiftVectorsArray[5] = _jtettraminoShiftVectors;
+            TetraminoShiftVectorsArray[6] = _ttettraminoShiftVectors;
         }
 
-        public bool[][,] TetraminoTypesArray
-        {
-            get { return _tetraminoTypesArray; }
-        }
+        public bool[][,] TetraminoTypesArray { get; private set; }
 
-        public Vector2Int[][] TetraminoShiftVectorsArray
-        {
-            get { return _tetraminoShiftVectorsArray; }
-        }
+        public Vector2Int[][] TetraminoShiftVectorsArray { get; private set; }
+
     }
 }
 
