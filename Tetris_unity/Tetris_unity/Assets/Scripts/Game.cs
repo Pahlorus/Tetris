@@ -137,7 +137,7 @@ namespace GameCore
             return _glassful[y, x] || isCheckActiveTetraminoBlocks || isCheckNextTetraminoBlocks;
         }
 
-        bool IsRotatable(Tetramino activeTetramino)
+        bool TryRotatable(Tetramino activeTetramino)
         {
             TetraminoRotate();
             bool result = true;
@@ -230,6 +230,17 @@ namespace GameCore
             }
         }
 
+        void Tick2(Vector2Int direct)
+        {
+            if (IsMoveable(_activeTetramino, direct))
+            {
+                TetraminoMove(direct);
+            }
+
+        }
+
+
+
         // TODO: Временно.
         void TestDraw()
         {
@@ -250,6 +261,7 @@ namespace GameCore
 
         void Update()
         {
+            _elapsedTime += Time.deltaTime;
 
             if (Input.GetKeyDown(KeyCode.DownArrow))
             {
@@ -273,21 +285,20 @@ namespace GameCore
 
             if (Input.GetKeyDown(KeyCode.LeftArrow))
             {
-                if (IsMoveable(_activeTetramino, _left))
-                {
-                    TetraminoMove(_left);
-                }
+
+                    if (IsMoveable(_activeTetramino, _left))
+                    {
+                        TetraminoMove(_left);
+                    }
             }
 
             if (Input.GetKeyDown(KeyCode.Space))
             {
-                if (IsRotatable(_activeTetramino))
+                if (TryRotatable(_activeTetramino))
                 {
                     TetraminoRotate();
                 }
             }
-
-            _elapsedTime += Time.deltaTime;
 
             if (_elapsedTime >= _tickTime)
             {
