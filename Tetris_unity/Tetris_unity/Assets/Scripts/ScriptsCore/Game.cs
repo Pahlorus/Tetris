@@ -9,9 +9,6 @@ namespace GameCore
     class Game : MonoBehaviour
     {
         [SerializeField]
-        // Временно, для отображения игрового поля.
-        private Text _text;
-        [SerializeField]
         Color32[] _colorsArray;
         private int _glassfulHigh = 23;
         private int _glassfulWidth = 10;
@@ -251,26 +248,6 @@ namespace GameCore
 
         }
 
-
-
-        // TODO: Временно.
-        void TestDraw()
-        {
-            string text = string.Empty;
-            for (int j = 0; j < _glassfulHigh; j++)
-            {
-                for (int i = 0; i < _glassfulWidth; i++)
-                {
-                    if (IsCellHaveBlock(j, i))
-                        text = text + "0" + " ";
-                    else
-                        text = text + ".." + " ";
-                }
-                text = text + "\n";
-            }
-            _text.text = text;
-        }
-
         void Update()
         {
             _elapsedTime += Time.deltaTime;
@@ -318,8 +295,6 @@ namespace GameCore
                 _elapsedTime -= _tickTime;
                 Tick();
             }
-
-          //  TestDraw();
         }
     }
 }
