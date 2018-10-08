@@ -34,6 +34,11 @@ namespace GameCore
         private TetraminoTypes _tetraminoTypes;
         private Rotation _rotation;
 
+        public Tetramino ActiveTetramino {get {return _activeTetramino;} }
+        public Tetramino NextTetramino { get { return _nextTetramino; } }
+        public Vector2Int ActiveTetraminoPos { get { return _activeTetraminoPos; } }
+        public Rotation Rotation { get { return _rotation; } }
+
         void Awake()
         {
             _down.y = _step;
@@ -45,7 +50,7 @@ namespace GameCore
             _tetraminoTypes = new TetraminoTypes();
             _colorsArray = new Color32[_tetraminoTypes.TetraminoTypesArray.Length];
             _glassful = new bool[_glassfulHigh, _glassfulWidth];
-            GameStart();
+            //GameStart();
         }
 
         public void GameStart()
@@ -76,7 +81,7 @@ namespace GameCore
             int tetraminoIndex = TetraminoIndexGenerate();
             _activeTetramino = _nextTetramino;
             _nextTetramino = new Tetramino(_tetraminoTypes.TetraminoTypesArray[tetraminoIndex], _tetraminoTypes.TetraminoShiftVectorsArray[tetraminoIndex], _colorsArray[tetraminoIndex]);
-            _rotation = Rotation.Cw0;
+            _rotation = Rotation.Angle0;
             _activeTetraminoPos = _previewPos;
 
             if (IsMoveable(_activeTetramino, _startPosition))
@@ -132,7 +137,7 @@ namespace GameCore
             // TODO: Временно, для отображения следующей фигуры
             if ((y >= _previewPos.y & y < _previewPos.y + 4 & x >= _previewPos.x & x < _previewPos.x + 4))
             {
-                isCheckNextTetraminoBlocks = _nextTetramino[y - _previewPos.y, x - _previewPos.x, Rotation.Cw0];
+                isCheckNextTetraminoBlocks = _nextTetramino[y - _previewPos.y, x - _previewPos.x, Rotation.Angle0];
             }
             return _glassful[y, x] || isCheckActiveTetraminoBlocks || isCheckNextTetraminoBlocks;
         }
@@ -306,7 +311,7 @@ namespace GameCore
                 Tick();
             }
 
-            TestDraw();
+          //  TestDraw();
         }
     }
 }

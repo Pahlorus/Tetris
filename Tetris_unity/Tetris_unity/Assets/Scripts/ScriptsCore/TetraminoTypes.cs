@@ -6,10 +6,10 @@ namespace GameCore
     [Flags]
     public enum Rotation
     {
-        Cw0 = 0,
-        Cw90 = 1,
-        Cw180 = 2,
-        Cw270 = 3,
+        Angle0 = 0,
+        Angle90 = 1,
+        Angle180 = 2,
+        Angle270 = 3,
     }
 
     class TetraminoTypes

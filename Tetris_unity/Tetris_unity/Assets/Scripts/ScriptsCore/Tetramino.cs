@@ -27,12 +27,12 @@ namespace GameCore
                 var yy = y;
                 var xx = x;
                 
-                if (rot.HasFlag(Rotation.Cw90))
+                if (rot.HasFlag(Rotation.Angle90))
                 {
                     yy = -x;
                     xx = y;
                 }
-                if (rot.HasFlag(Rotation.Cw180))
+                if (rot.HasFlag(Rotation.Angle180))
                 {
                     yy = -yy;
                     xx = -xx;
