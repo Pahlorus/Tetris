@@ -34,10 +34,16 @@ namespace GameCore
         private TetraminoTypes _tetraminoTypes;
         private Rotation _rotation;
 
+        public bool[,] GlassFull { get { return _glassful; } }
         public Tetramino ActiveTetramino {get {return _activeTetramino;} }
         public Tetramino NextTetramino { get { return _nextTetramino; } }
         public Vector2Int ActiveTetraminoPos { get { return _activeTetraminoPos; } }
+        public Vector2Int PreviewTetraminoPos { get { return _previewPos; } }
         public Rotation Rotation { get { return _rotation; } }
+
+
+        public EventHandler onInsert;
+        public EventHandler onRotate;
 
         void Awake()
         {
@@ -232,6 +238,7 @@ namespace GameCore
                 TetraminoInsert(_activeTetramino);
                 CheckFillingLineAndErase();
                 NewTetraminoCreate();
+                onInsert?.Invoke(this, EventArgs.Empty);
             }
         }
 
@@ -302,6 +309,7 @@ namespace GameCore
                 if (TryRotatable(_activeTetramino))
                 {
                     TetraminoRotate();
+                    onRotate?.Invoke(this, EventArgs.Empty);
                 }
             }
 
