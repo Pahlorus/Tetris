@@ -74,6 +74,7 @@ namespace GameView
                     if (tetraminoView[j, i])
                     {
                         ReturnTile(tetraminoView[j, i]);
+                        tetraminoView[j, i] = null;
                     }
                 }
             }
@@ -109,18 +110,30 @@ namespace GameView
             }
         }
 
-        TileView GetTile(/*float x, float y*/)
+        TileView GetTile()
         {
-            TileView tile = Instantiate(_tilePref, _board.transform);
-            tile.transform.localScale = Vector3.one;
+            TileView tile;
+            if (_tileList.Count ==0)
+            {
+                tile = Instantiate(_tilePref, _board.transform);
+                tile.transform.localScale = Vector3.one;
+            }
+            else
+            {
+                tile = _tileList[0];
+                tile.gameObject.SetActive(true);
+               _tileList.RemoveAt(0);
+            }
             return tile;
+
         }
         void ReturnTile(TileView tile)
         {
-            Destroy(tile.gameObject);
+             tile.transform.position = new Vector3(0, 0, 0);
+            tile.gameObject.SetActive(false);
+            _tileList.Add(tile);
+
         }
-
-
 
         void GlassFullReDraw()
         {
@@ -133,6 +146,7 @@ namespace GameView
                     if (_glassFul[j, i])
                     {
                         ReturnTile(_glassFul[j, i]);
+                        _glassFul[j, i] = null;
                     }
                 }
             }
