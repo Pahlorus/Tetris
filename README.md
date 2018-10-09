@@ -1,2 +1,2 @@
 # Tetris 
-Training project
+Training project. Visual interface the game based on UnityEngine.
