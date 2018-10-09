@@ -18,10 +18,23 @@ namespace GameView
         private float _shiftX = 5f;
         private float _shiftY = 11.5f;
         private TileView[,] _activeTetramino;
-        private TileView[,] _nextTetramino;
+        private TileView[,] _incomingTetramino;
         private TileView[,] _glassFul;
         private List<TileView> _tileList;
         private Game _game;
+
+        void Awake()
+        {
+            enabled = false;
+            _tileList = new List<TileView>();
+            _glassFul = new TileView[23, 10];
+            _activeTetramino = new TileView[4, 4];
+            _incomingTetramino = new TileView[4, 4];
+            StartGame();
+            TetraminoViewSet(_game.IncomingTetramino, _incomingTetramino);
+            TetraminoViewSet(_game.ActiveTetramino, _activeTetramino);
+            enabled = true;
+        }
 
         public void StartGame()
         {
@@ -32,139 +45,68 @@ namespace GameView
             _game.GameStart();
         }
 
-        private void _game_OnRotate(object sender, EventArgs e)
-        {
-            TetraminoViewDelete();
-            TetraminoViewCreate();
-        }
-
-        private void _game_OnInsert(object sender, EventArgs e)
-        {
-            TetraminoViewDelete();
-            GlassFullReDraw();
-            TetraminoViewCreate();
-        }
-
         public void StopGame()
         {
             Destroy(_game.gameObject);
         }
 
-        void Awake()
+        private void _game_OnRotate(object sender, EventArgs e)
         {
-            enabled = false;
-            _tileList = new List<TileView>();
-            _glassFul = new TileView[23,10];
-            _activeTetramino = new TileView[4, 4];
-            _nextTetramino = new TileView[4, 4];
-            StartGame();
-            TetraminoViewCreate();
-            enabled = true;
+            TetraminoViewClear(_activeTetramino);
+            TetraminoViewSet(_game.ActiveTetramino, _activeTetramino);
         }
 
-
-        void TetraminoViewDelete()
+        private void _game_OnInsert(object sender, EventArgs e)
         {
-
-
-            for (int i = 0; i < 4; i++)
-            {
-                for (int j = 0; j < 4; j++)
-                {
-                    if (_activeTetramino[j, i])
-                    {
-                        ReturnTile(_activeTetramino[j, i]);
-                    }
-                }
-            }
-
-            for (int i = 0; i < 4; i++)
-            {
-                for (int j = 0; j < 4; j++)
-                {
-                    if (_nextTetramino[j, i])
-                    {
-                        ReturnTile(_nextTetramino[j, i]);
-                    }
-                }
-            }
-            Array.Clear(_activeTetramino, 0, _activeTetramino.Length);
-            Array.Clear(_nextTetramino, 0, _nextTetramino.Length);
+            TetraminoViewClear(_incomingTetramino);
+            TetraminoViewClear(_activeTetramino);
+            GlassFullReDraw();
+            TetraminoViewSet(_game.IncomingTetramino, _incomingTetramino);
+            TetraminoViewSet(_game.ActiveTetramino, _activeTetramino);
         }
 
-
-
-        void TetraminoViewCreate()
+        void TetraminoViewClear(TileView[,] tetraminoView)
         {
-            Array.Clear(_activeTetramino, 0, _activeTetramino.Length);
-            Array.Clear(_nextTetramino, 0, _nextTetramino.Length);
-
             for (int i = 0; i < 4; i++)
             {
                 for (int j = 0; j < 4; j++)
                 {
-                    if (_game.ActiveTetramino[j, i, _game.Rotation])
+                    if (tetraminoView[j, i])
                     {
-                        _activeTetramino[j, i] = GetTile();
+                        ReturnTile(tetraminoView[j, i]);
                     }
                 }
             }
-
-           for (int i = 0; i < 4; i++)
-            {
-                for (int j = 0; j < 4; j++)
-                {
-                    if (_game.NextTetramino[j, i,Rotation.Angle0])
-                    {
-                        _nextTetramino[j, i] = GetTile();
-                    }
-                }
-            }
-
-
         }
 
-        void TetraminoDraw()
+        void TetraminoViewSet(Tetramino tetramino, TileView[,] tetraminoView)
         {
-            Vector2Int activePos = _game.ActiveTetraminoPos;
             for (int i = 0; i < 4; i++)
             {
-                
                 for (int j = 0; j < 4; j++)
                 {
-                    float x = (_step*activePos.x+_step * i) - _shiftX*_step+0.32f;
-                    float y = -(_step*activePos.y+_step * j)+_shiftY*_step - 0.32f;
-                    //float z = 0;
-                    if (_activeTetramino[j, i])
+                    if (tetramino[j, i, _game.Rotation])
                     {
-                        _activeTetramino[j, i].transform.position = new Vector3(x, y);
+                        tetraminoView[j, i] = GetTile();
                     }
-                   
                 }
             }
+        }
 
-            Vector2Int previewPos = _game.PreviewTetraminoPos;
-
+        void TetraminoTilesSetPosition(TileView[,] tetraminoView, Vector2Int Pos)
+        {
             for (int i = 0; i < 4; i++)
             {
-
                 for (int j = 0; j < 4; j++)
                 {
-                    float x = (_step * previewPos.x + _step * i) - _shiftX * _step + 0.32f;
-                    float y = -(_step * previewPos.y + _step * j) + _shiftY * _step - 0.32f;
-                    //float z = 0;
-                    if (_nextTetramino[j, i])
+                    float x = _step * (Pos.x + i - _shiftX + 0.5f);
+                    float y = _step * (-Pos.y - j + _shiftY - 0.5f);
+                    if (tetraminoView[j, i])
                     {
-                        _nextTetramino[j, i].transform.position = new Vector3(x, y);
+                        tetraminoView[j, i].transform.position = new Vector3(x, y);
                     }
-
                 }
             }
-
-
-
-
-
         }
 
         TileView GetTile(/*float x, float y*/)
@@ -175,7 +117,6 @@ namespace GameView
         }
         void ReturnTile(TileView tile)
         {
-            //tile = null;
             Destroy(tile.gameObject);
         }
 
@@ -204,23 +145,13 @@ namespace GameView
                     {
                         _glassFul[j, i] = GetTile();
 
-                        float x = ( _step * i) - _shiftX * _step+0.32f;
+                        float x = (_step * i) - _shiftX * _step + 0.32f;
                         float y = -(_step * j) + _shiftY * _step - 0.32f; ;
                         _glassFul[j, i].transform.position = new Vector3(x, y);
                     }
                 }
             }
-
-
-
-            
-
-
-            
-
         }
-
-
 
         void Update()
         {
@@ -228,7 +159,8 @@ namespace GameView
             {
                 StopGame();
             }
-            TetraminoDraw();
+            TetraminoTilesSetPosition(_activeTetramino, _game.ActiveTetraminoPos);
+            TetraminoTilesSetPosition(_incomingTetramino, _game.IncomingTetraminoPos);
 
         }
     }

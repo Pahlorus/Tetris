@@ -17,27 +17,26 @@ namespace GameCore
         private int _initialPosY = 0;
         private float _tickTime = 1f;
         private float _elapsedTime = 0f;
-        private bool[,] _glassful;
 
+        private bool[,] _glassful;
         private Vector2Int _down;
         private Vector2Int _left;
         private Vector2Int _right;
         private Vector2Int _startPosition;
         private Vector2Int _activeTetraminoPos;
-        private Vector2Int _previewPos;
+        private Vector2Int _incomingTetraminoPos;
         private Tetramino _activeTetramino;
-        private Tetramino _nextTetramino;
+        private Tetramino _incomingTetramino;
         private Tetramino[] _tetraminoArray;
         private TetraminoTypes _tetraminoTypes;
         private Rotation _rotation;
 
         public bool[,] GlassFull { get { return _glassful; } }
-        public Tetramino ActiveTetramino {get {return _activeTetramino;} }
-        public Tetramino NextTetramino { get { return _nextTetramino; } }
+        public Tetramino ActiveTetramino { get { return _activeTetramino; } }
+        public Tetramino IncomingTetramino { get { return _incomingTetramino; } }
         public Vector2Int ActiveTetraminoPos { get { return _activeTetraminoPos; } }
-        public Vector2Int PreviewTetraminoPos { get { return _previewPos; } }
+        public Vector2Int IncomingTetraminoPos { get { return _incomingTetraminoPos; } }
         public Rotation Rotation { get { return _rotation; } }
-
 
         public EventHandler onInsert;
         public EventHandler onRotate;
@@ -48,18 +47,17 @@ namespace GameCore
             _left.x = -_step;
             _right.x = _step;
             _startPosition.y = 4 * _step;
-            _previewPos.y = _initialPosY;
-            _previewPos.x = _initialPosX;
+            _incomingTetraminoPos.y = _initialPosY;
+            _incomingTetraminoPos.x = _initialPosX;
             _tetraminoTypes = new TetraminoTypes();
             _colorsArray = new Color32[_tetraminoTypes.TetraminoTypesArray.Length];
             _glassful = new bool[_glassfulHigh, _glassfulWidth];
-            //GameStart();
         }
 
         public void GameStart()
         {
             int tetraminoIndex = TetraminoIndexGenerate();
-            _nextTetramino = new Tetramino(_tetraminoTypes.TetraminoTypesArray[tetraminoIndex], _tetraminoTypes.TetraminoShiftVectorsArray[tetraminoIndex], _colorsArray[tetraminoIndex]);
+            _incomingTetramino = new Tetramino(_tetraminoTypes.TetraminoTypesArray[tetraminoIndex], _tetraminoTypes.TetraminoShiftVectorsArray[tetraminoIndex], _colorsArray[tetraminoIndex]);
             NewTetraminoCreate();
             GameRun();
         }
@@ -82,10 +80,10 @@ namespace GameCore
         void NewTetraminoCreate()
         {
             int tetraminoIndex = TetraminoIndexGenerate();
-            _activeTetramino = _nextTetramino;
-            _nextTetramino = new Tetramino(_tetraminoTypes.TetraminoTypesArray[tetraminoIndex], _tetraminoTypes.TetraminoShiftVectorsArray[tetraminoIndex], _colorsArray[tetraminoIndex]);
+            _activeTetramino = _incomingTetramino;
+            _incomingTetramino = new Tetramino(_tetraminoTypes.TetraminoTypesArray[tetraminoIndex], _tetraminoTypes.TetraminoShiftVectorsArray[tetraminoIndex], _colorsArray[tetraminoIndex]);
             _rotation = Rotation.Angle0;
-            _activeTetraminoPos = _previewPos;
+            _activeTetraminoPos = _incomingTetraminoPos;
 
             if (IsMoveable(_activeTetramino, _startPosition))
             {
@@ -138,14 +136,14 @@ namespace GameCore
                 isCheckActiveTetraminoBlocks = _activeTetramino[y - _activeTetraminoPos.y, x - _activeTetraminoPos.x, _rotation];
             }
             // TODO: Временно, для отображения следующей фигуры
-            if ((y >= _previewPos.y & y < _previewPos.y + 4 & x >= _previewPos.x & x < _previewPos.x + 4))
+            if ((y >= _incomingTetraminoPos.y & y < _incomingTetraminoPos.y + 4 & x >= _incomingTetraminoPos.x & x < _incomingTetraminoPos.x + 4))
             {
-                isCheckNextTetraminoBlocks = _nextTetramino[y - _previewPos.y, x - _previewPos.x, Rotation.Angle0];
+                isCheckNextTetraminoBlocks = _incomingTetramino[y - _incomingTetraminoPos.y, x - _incomingTetraminoPos.x, Rotation.Angle0];
             }
             return _glassful[y, x] || isCheckActiveTetraminoBlocks || isCheckNextTetraminoBlocks;
         }
 
-        bool TryRotatable(Tetramino activeTetramino)
+        bool IsRotatable(Tetramino activeTetramino)
         {
             TetraminoRotate();
             bool result = true;
@@ -241,17 +239,31 @@ namespace GameCore
 
         void Tick2(Vector2Int direct)
         {
-            if (IsMoveable(_activeTetramino, direct))
+            if (Input.GetKeyDown(KeyCode.RightArrow))
             {
-                TetraminoMove(direct);
+                if (IsMoveable(_activeTetramino, direct))
+                {
+                    TetraminoMove(direct);
+                }
             }
 
+        }
+
+        IEnumerator MoveWithDelay(Vector2Int direct)
+        {
+            while (true)
+            {
+                if (IsMoveable(_activeTetramino, direct))
+                {
+                    TetraminoMove(direct);
+                }
+                yield return new WaitForSeconds(0.1f);
+            }
         }
 
         void Update()
         {
             _elapsedTime += Time.deltaTime;
-
             if (Input.GetKeyDown(KeyCode.DownArrow))
             {
                 _tickTime = 0.05f;
@@ -266,24 +278,27 @@ namespace GameCore
 
             if (Input.GetKeyDown(KeyCode.RightArrow))
             {
-                if (IsMoveable(_activeTetramino, _right))
-                {
-                    TetraminoMove(_right);
-                }
+                StartCoroutine(MoveWithDelay(_right));
+            }
+
+            if (Input.GetKeyUp(KeyCode.RightArrow))
+            {
+                StopAllCoroutines();
             }
 
             if (Input.GetKeyDown(KeyCode.LeftArrow))
             {
+                StartCoroutine(MoveWithDelay(_left));
+            }
 
-                    if (IsMoveable(_activeTetramino, _left))
-                    {
-                        TetraminoMove(_left);
-                    }
+            if (Input.GetKeyUp(KeyCode.LeftArrow))
+            {
+                StopAllCoroutines();
             }
 
             if (Input.GetKeyDown(KeyCode.Space))
             {
-                if (TryRotatable(_activeTetramino))
+                if (IsRotatable(_activeTetramino))
                 {
                     TetraminoRotate();
                     onRotate?.Invoke(this, EventArgs.Empty);
