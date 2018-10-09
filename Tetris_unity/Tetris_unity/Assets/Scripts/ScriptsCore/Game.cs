@@ -114,19 +114,6 @@ namespace GameCore
             _activeTetraminoPos = _activeTetraminoPos + direct;
         }
 
-        void TetraminoRotate()
-        {
-            _rotation = (Rotation)(((int)_rotation + 1) % 4);
-            TetraminoShiftAfterRotate(_activeTetramino, _rotation);
-        }
-
-        void TetraminoShiftAfterRotate(Tetramino activeTetramino, Rotation rotation)
-        {
-            int numberRotate = (int)rotation;
-            Vector2Int direct = activeTetramino.ShiftVector[numberRotate];
-            TetraminoMove(direct);
-        }
-
         bool IsCellHaveBlock(int y, int x)
         {
             bool isCheckActiveTetraminoBlocks = false;
@@ -143,28 +130,32 @@ namespace GameCore
             return _glassful[y, x] || isCheckActiveTetraminoBlocks || isCheckNextTetraminoBlocks;
         }
 
-        bool IsRotatable(Tetramino activeTetramino)
+        bool TryTetraminoRotate(Tetramino activeTetramino)
         {
-            TetraminoRotate();
             bool result = true;
-            Vector2Int Pos = _activeTetraminoPos;
+            Rotation checkingRotation = (Rotation)(((int)_rotation + 1) % 4);
+            int chekingNumberRotate = (int)checkingRotation;
+            Vector2Int checkingShiftPos = _activeTetraminoPos + activeTetramino.ShiftVector[chekingNumberRotate]; ;
+
             for (int i = 0; i < 4; i++)
             {
                 for (int j = 0; j < 4; j++)
                 {
-                    if (!activeTetramino[j, i, _rotation])
+                    if (!activeTetramino[j, i, checkingRotation])
                     {
                         continue;
                     }
-                    if ((j + Pos.y >= _glassfulHigh || i + Pos.x >= _glassfulWidth || i + Pos.x < 0 || _glassful[j + Pos.y, i + Pos.x]))
+                    if ((j + checkingShiftPos.y >= _glassfulHigh || i + checkingShiftPos.x >= _glassfulWidth || i + checkingShiftPos.x < 0 || _glassful[j + checkingShiftPos.y, i + checkingShiftPos.x]))
                     {
                         result = false;
                     }
                 }
             }
-            TetraminoRotate();
-            TetraminoRotate();
-            TetraminoRotate();
+            if (result)
+            {
+                _rotation = checkingRotation;
+                _activeTetraminoPos = checkingShiftPos;
+            }
             return result;
         }
 
@@ -237,18 +228,6 @@ namespace GameCore
             }
         }
 
-        void Tick2(Vector2Int direct)
-        {
-            if (Input.GetKeyDown(KeyCode.RightArrow))
-            {
-                if (IsMoveable(_activeTetramino, direct))
-                {
-                    TetraminoMove(direct);
-                }
-            }
-
-        }
-
         IEnumerator MoveWithDelay(Vector2Int direct)
         {
             while (true)
@@ -298,9 +277,8 @@ namespace GameCore
 
             if (Input.GetKeyDown(KeyCode.Space))
             {
-                if (IsRotatable(_activeTetramino))
+                if (TryTetraminoRotate(_activeTetramino))
                 {
-                    TetraminoRotate();
                     onRotate?.Invoke(this, EventArgs.Empty);
                 }
             }
