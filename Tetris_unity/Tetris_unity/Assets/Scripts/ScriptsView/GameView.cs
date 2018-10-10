@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.UI;
 using GameCore;
 
 namespace GameView
@@ -16,6 +17,10 @@ namespace GameView
         private GameObject _pauseText;
         [SerializeField]
         private GameObject _gameOverText;
+        [SerializeField]
+        private Text _score;
+        [SerializeField]
+        private Text _lineCount;
         [SerializeField]
         private TileView _tilePref;
 
@@ -70,7 +75,6 @@ namespace GameView
                 _gameState = true;
                 _pauseText.gameObject.SetActive(false);
             }
-            
         }
 
         public void GameQuit()
@@ -94,6 +98,8 @@ namespace GameView
                 GlassFullReDraw();
                 TetraminoViewSet(_game.IncomingTetramino, _incomingTetramino);
                 TetraminoViewSet(_game.ActiveTetramino, _activeTetramino);
+                _score.text = "Score: "+_game.Score.ToString();
+                _lineCount.text = "Lines : "+_game.LineCount.ToString();
             }
         }
 
@@ -163,7 +169,6 @@ namespace GameView
                _tileList.RemoveAt(0);
             }
             return tile;
-
         }
         void ReturnTile(TileView tile)
         {

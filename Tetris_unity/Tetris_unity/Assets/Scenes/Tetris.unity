@@ -1074,6 +1074,8 @@ MonoBehaviour:
   _board: {fileID: 988856713}
   _pauseText: {fileID: 630037133}
   _gameOverText: {fileID: 130952974}
+  _score: {fileID: 1963205600}
+  _lineCount: {fileID: 2023902148}
   _tilePref: {fileID: 114762593526283654, guid: 3c521a481ba663343b38d64da77065a3,
     type: 2}
 --- !u!4 &1450150225
@@ -1440,9 +1442,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 'Lines
-
-    completed: '
+  m_Text: 'Lines: '
 --- !u!222 &2023902149
 CanvasRenderer:
   m_ObjectHideFlags: 0

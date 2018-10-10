@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace GameCore
 {
@@ -15,6 +14,9 @@ namespace GameCore
         private int _step = 1;
         private int _initialPosX = 3;
         private int _initialPosY = 0;
+        private int _score;
+        private int _lineCount;
+        private int[] _scoreMultiplier = new int[5] {10, 100, 300, 700, 1500 };
         private float _tickTime = 1f;
         private float _elapsedTime = 0f;
 
@@ -31,6 +33,8 @@ namespace GameCore
         private TetraminoTypes _tetraminoTypes;
         private Rotation _rotation;
 
+        public int Score { get { return _score; } }
+        public int LineCount { get { return _lineCount; } }
         public bool[,] GlassFull { get { return _glassful; } }
         public Tetramino ActiveTetramino { get { return _activeTetramino; } }
         public Tetramino IncomingTetramino { get { return _incomingTetramino; } }
@@ -115,7 +119,6 @@ namespace GameCore
             {
                 isCheckActiveTetraminoBlocks = _activeTetramino[y - _activeTetraminoPos.y, x - _activeTetraminoPos.x, _rotation];
             }
-            // TODO: Временно, для отображения следующей фигуры
             if ((y >= _incomingTetraminoPos.y & y < _incomingTetraminoPos.y + 4 & x >= _incomingTetraminoPos.x & x < _incomingTetraminoPos.x + 4))
             {
                 isCheckNextTetraminoBlocks = _incomingTetramino[y - _incomingTetraminoPos.y, x - _incomingTetraminoPos.x, Rotation.Angle0];
@@ -190,6 +193,7 @@ namespace GameCore
 
         void CheckFillingLineAndErase()
         {
+            int lineCount = 0;
             bool isFillingLine;
             for (int j = 3; j < _glassfulHigh; j++)
             {
@@ -206,8 +210,11 @@ namespace GameCore
                 if (isFillingLine)
                 {
                     LineEraseAndShiftGlassfull(j);
+                    lineCount += 1;
                 }
             }
+            _score += _scoreMultiplier[lineCount];
+            _lineCount += lineCount;
         }
 
         void Tick()
