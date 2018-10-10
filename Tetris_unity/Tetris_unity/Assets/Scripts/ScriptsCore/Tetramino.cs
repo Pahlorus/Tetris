@@ -8,19 +8,19 @@ namespace GameCore
     class Tetramino
     {
         private int _size = 4;
-        private bool[,] _tetramino;
+        private Tile[,] _tetramino;
 
-        public Tetramino(bool[,] tetraminoType, Vector2Int[] tetraminoShiftVectors, Color32 color)
+        public Tetramino(Tile[,] tetraminoType, Vector2Int[] tetraminoShiftVectors, int colorIndex)
         {
             _tetramino = tetraminoType;
             ShiftVector = tetraminoShiftVectors;
-            Color = color;
+            Color = colorIndex;
+            ColorSet(colorIndex);
         }
-
-        public Color32 Color { get; private set; }
+        public int Color { get; private set; }
         public Vector2Int[] ShiftVector { get; private set; }
 
-        public bool this[int y, int x, Rotation rot]
+        public Tile this[int y, int x, Rotation rot]
         {
             get
             {
@@ -40,6 +40,20 @@ namespace GameCore
                 return _tetramino[(yy + _size) % _size, (xx + _size) % _size];
             }
         }
+
+        private void ColorSet(int colorIndex)
+        {
+            for (int j = 0; j < _size; j++)
+            {
+                for (int i = 0; i < _size; i++)
+                {
+                    if (_tetramino[j, i].State)
+                        _tetramino[j, i].Color = colorIndex;
+                }
+            }
+
+        }
+
     }
 }
 

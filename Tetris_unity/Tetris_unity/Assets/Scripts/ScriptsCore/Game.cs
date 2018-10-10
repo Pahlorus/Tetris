@@ -20,7 +20,7 @@ namespace GameCore
         private float _tickTime = 1f;
         private float _elapsedTime = 0f;
 
-        private bool[,] _glassful;
+        private Tile[,] _glassful;
         private Vector2Int _down;
         private Vector2Int _left;
         private Vector2Int _right;
@@ -35,7 +35,7 @@ namespace GameCore
 
         public int Score { get { return _score; } }
         public int LineCount { get { return _lineCount; } }
-        public bool[,] GlassFull { get { return _glassful; } }
+        public Tile[,] GlassFull { get { return _glassful; } }
         public Tetramino ActiveTetramino { get { return _activeTetramino; } }
         public Tetramino IncomingTetramino { get { return _incomingTetramino; } }
         public Vector2Int ActiveTetraminoPos { get { return _activeTetraminoPos; } }
@@ -56,13 +56,13 @@ namespace GameCore
             _incomingTetraminoPos.x = _initialPosX;
             _tetraminoTypes = new TetraminoTypes();
             _colorsArray = new Color32[_tetraminoTypes.TetraminoTypesArray.Length];
-            _glassful = new bool[_glassfulHigh, _glassfulWidth];
+            _glassful = new Tile[_glassfulHigh, _glassfulWidth];
         }
 
         public void GameStart()
         {
             int tetraminoIndex = TetraminoIndexGenerate();
-            _incomingTetramino = new Tetramino(_tetraminoTypes.TetraminoTypesArray[tetraminoIndex], _tetraminoTypes.TetraminoShiftVectorsArray[tetraminoIndex], _colorsArray[tetraminoIndex]);
+            _incomingTetramino = new Tetramino(_tetraminoTypes.TetraminoTypesArray[tetraminoIndex], _tetraminoTypes.TetraminoShiftVectorsArray[tetraminoIndex], tetraminoIndex);
             NewTetraminoCreate();
             GameRun();
         }
@@ -94,7 +94,7 @@ namespace GameCore
                 onGameOver?.Invoke(this, EventArgs.Empty);
             }
             int tetraminoIndex = TetraminoIndexGenerate();
-            _incomingTetramino = new Tetramino(_tetraminoTypes.TetraminoTypesArray[tetraminoIndex], _tetraminoTypes.TetraminoShiftVectorsArray[tetraminoIndex], _colorsArray[tetraminoIndex]);
+            _incomingTetramino = new Tetramino(_tetraminoTypes.TetraminoTypesArray[tetraminoIndex], _tetraminoTypes.TetraminoShiftVectorsArray[tetraminoIndex], tetraminoIndex);
         }
 
         void TetraminoInsert(Tetramino activeTetramino)
@@ -103,9 +103,10 @@ namespace GameCore
             {
                 for (int j = 0; j < 4; j++)
                 {
-                    if (activeTetramino[j, i, _rotation])
+                    if (activeTetramino[j, i, _rotation].State)
                     {
                         _glassful[_activeTetraminoPos.y + j, _activeTetraminoPos.x + i] = activeTetramino[j, i, _rotation];
+
                     }
                 }
             }
@@ -117,13 +118,13 @@ namespace GameCore
             bool isCheckNextTetraminoBlocks = false;
             if ((y >= _activeTetraminoPos.y & y < _activeTetraminoPos.y + 4 & x >= _activeTetraminoPos.x & x < _activeTetraminoPos.x + 4))
             {
-                isCheckActiveTetraminoBlocks = _activeTetramino[y - _activeTetraminoPos.y, x - _activeTetraminoPos.x, _rotation];
+                isCheckActiveTetraminoBlocks = _activeTetramino[y - _activeTetraminoPos.y, x - _activeTetraminoPos.x, _rotation].State;
             }
             if ((y >= _incomingTetraminoPos.y & y < _incomingTetraminoPos.y + 4 & x >= _incomingTetraminoPos.x & x < _incomingTetraminoPos.x + 4))
             {
-                isCheckNextTetraminoBlocks = _incomingTetramino[y - _incomingTetraminoPos.y, x - _incomingTetraminoPos.x, Rotation.Angle0];
+                isCheckNextTetraminoBlocks = _incomingTetramino[y - _incomingTetraminoPos.y, x - _incomingTetraminoPos.x, Rotation.Angle0].State;
             }
-            return _glassful[y, x] || isCheckActiveTetraminoBlocks || isCheckNextTetraminoBlocks;
+            return _glassful[y, x].State || isCheckActiveTetraminoBlocks || isCheckNextTetraminoBlocks;
         }
 
         bool TryTetraminoRotate(Tetramino activeTetramino)
@@ -137,11 +138,11 @@ namespace GameCore
             {
                 for (int j = 0; j < 4; j++)
                 {
-                    if (!activeTetramino[j, i, checkingRotation])
+                    if (!activeTetramino[j, i, checkingRotation].State)
                     {
                         continue;
                     }
-                    if ((j + checkingShiftPos.y >= _glassfulHigh || i + checkingShiftPos.x >= _glassfulWidth || i + checkingShiftPos.x < 0 || _glassful[j + checkingShiftPos.y, i + checkingShiftPos.x]))
+                    if ((j + checkingShiftPos.y >= _glassfulHigh || i + checkingShiftPos.x >= _glassfulWidth || i + checkingShiftPos.x < 0 || _glassful[j + checkingShiftPos.y, i + checkingShiftPos.x].State))
                     {
                         result = false;
                     }
@@ -163,11 +164,11 @@ namespace GameCore
             {
                 for (int j = 0; j < 4; j++)
                 {
-                    if (!_activeTetramino[j, i, _rotation])
+                    if (!_activeTetramino[j, i, _rotation].State)
                     {
                         continue;
                     }
-                    if ((j + checkingNewPos.y >= _glassfulHigh || i + checkingNewPos.x >= _glassfulWidth || i + checkingNewPos.x < 0 || _glassful[j + checkingNewPos.y, i + checkingNewPos.x]))
+                    if ((j + checkingNewPos.y >= _glassfulHigh || i + checkingNewPos.x >= _glassfulWidth || i + checkingNewPos.x < 0 || _glassful[j + checkingNewPos.y, i + checkingNewPos.x].State))
                     {
                         result = false;
                     }
@@ -200,7 +201,7 @@ namespace GameCore
                 isFillingLine = true;
                 for (int i = 0; i < _glassfulWidth; i++)
                 {
-                    if (!_glassful[j, i])
+                    if (!_glassful[j, i].State)
                     {
                         isFillingLine = false;
                         break;

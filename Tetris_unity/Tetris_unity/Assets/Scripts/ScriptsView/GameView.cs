@@ -12,6 +12,8 @@ namespace GameView
     class GameView : MonoBehaviour
     {
         [SerializeField]
+        Color32[] _colorsArray;
+        [SerializeField]
         private GameObject _board;
         [SerializeField]
         private GameObject _pauseText;
@@ -22,26 +24,26 @@ namespace GameView
         [SerializeField]
         private Text _lineCount;
         [SerializeField]
-        private TileView _tilePref;
+        private GameObject _tilePref;
 
         private float _step = 0.64f;
         private float _shiftX = 5f;
         private float _shiftY = 11.5f;
         private bool _gameState;
-        private TileView[,] _activeTetramino;
-        private TileView[,] _incomingTetramino;
-        private TileView[,] _glassFul;
-        private List<TileView> _tileList;
+        private GameObject [,] _activeTetramino;
+        private GameObject[,] _incomingTetramino;
+        private GameObject[,] _glassFul;
+        private List<GameObject> _tileList;
         private Game _game;
 
         void Awake()
         {
             enabled = false;
             _gameState = true;
-            _tileList = new List<TileView>();
-            _glassFul = new TileView[23, 10];
-            _activeTetramino = new TileView[4, 4];
-            _incomingTetramino = new TileView[4, 4];
+            _tileList = new List<GameObject>();
+            _glassFul = new GameObject[23, 10];
+            _activeTetramino = new GameObject[4, 4];
+            _incomingTetramino = new GameObject [4, 4];
             GameStart();
             TetraminoViewSet(_game.IncomingTetramino, _incomingTetramino);
             TetraminoViewSet(_game.ActiveTetramino, _activeTetramino);
@@ -109,7 +111,7 @@ namespace GameView
             _gameOverText.gameObject.SetActive(true);
         }
 
-        void TetraminoViewClear(TileView[,] tetraminoView)
+        void TetraminoViewClear(GameObject[,] tetraminoView)
         {
             for (int i = 0; i < 4; i++)
             {
@@ -124,21 +126,22 @@ namespace GameView
             }
         }
 
-        void TetraminoViewSet(Tetramino tetramino, TileView[,] tetraminoView)
+        void TetraminoViewSet(Tetramino tetramino, GameObject[,] tetraminoView)
         {
             for (int i = 0; i < 4; i++)
             {
                 for (int j = 0; j < 4; j++)
                 {
-                    if (tetramino[j, i, _game.Rotation])
+                    if (tetramino[j, i, _game.Rotation].State)
                     {
-                        tetraminoView[j, i] = GetTile();
+                        int colorIndex = tetramino[j, i, _game.Rotation].Color;
+                        tetraminoView[j, i] = GetTile(_colorsArray[colorIndex]);
                     }
                 }
             }
         }
 
-        void TetraminoTilesSetPosition(TileView[,] tetraminoView, Vector2Int Pos)
+        void TetraminoTilesSetPosition(GameObject[,] tetraminoView, Vector2Int Pos)
         {
             for (int i = 0; i < 4; i++)
             {
@@ -154,23 +157,25 @@ namespace GameView
             }
         }
 
-        TileView GetTile()
+        GameObject GetTile(Color32 color)
         {
-            TileView tile;
+            GameObject tile;
             if (_tileList.Count ==0)
             {
                 tile = Instantiate(_tilePref, _board.transform);
                 tile.transform.localScale = Vector3.one;
+                tile.GetComponent<SpriteRenderer>().color = color;
             }
             else
             {
                 tile = _tileList[0];
+                tile.GetComponent<SpriteRenderer>().color = color;
                 tile.gameObject.SetActive(true);
                _tileList.RemoveAt(0);
             }
             return tile;
         }
-        void ReturnTile(TileView tile)
+        void ReturnTile(GameObject tile)
         {
              tile.transform.position = new Vector3(0, 0, 0);
             tile.gameObject.SetActive(false);
@@ -197,9 +202,10 @@ namespace GameView
             {
                 for (int i = 0; i < 10; i++)
                 {
-                    if (_game.GlassFull[j, i])
+                    if (_game.GlassFull[j, i].State)
                     {
-                        _glassFul[j, i] = GetTile();
+                        int colorIndex = _game.GlassFull[j, i].Color;
+                        _glassFul[j, i] = GetTile(_colorsArray[colorIndex]);
 
                         float x = (_step * i) - _shiftX * _step + 0.32f;
                         float y = -(_step * j) + _shiftY * _step - 0.32f; ;

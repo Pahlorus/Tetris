@@ -14,13 +14,13 @@ namespace GameCore
 
     class TetraminoTypes
     {
-        private bool[,] _otetramino;
-        private bool[,] _itetramino;
-        private bool[,] _stetramino;
-        private bool[,] _ztetramino;
-        private bool[,] _ltetramino;
-        private bool[,] _jtetramino;
-        private bool[,] _ttetramino;
+        private Tile[,] _otetramino;
+        private Tile[,] _itetramino;
+        private Tile[,] _stetramino;
+        private Tile[,] _ztetramino;
+        private Tile[,] _ltetramino;
+        private Tile[,] _jtetramino;
+        private Tile[,] _ttetramino;
         private Vector2Int[] _otettraminoShiftVectors;
         private Vector2Int[] _itettraminoShiftVectors;
         private Vector2Int[] _stettraminoShiftVectors;
@@ -31,15 +31,15 @@ namespace GameCore
 
         public TetraminoTypes()
         {
-            TetraminoTypesArray = new bool[7][,];
+            TetraminoTypesArray = new Tile[7][,];
             TetraminoShiftVectorsArray = new Vector2Int[7][];
 
             #region Otetramino
-            _otetramino = new bool[4, 4];
-            _otetramino[1, 1] = true;
-            _otetramino[1, 2] = true;
-            _otetramino[2, 1] = true;
-            _otetramino[2, 2] = true;
+            _otetramino = new Tile[4, 4];
+            _otetramino[1, 1].State = true;
+            _otetramino[1, 2].State = true;
+            _otetramino[2, 1].State = true;
+            _otetramino[2, 2].State = true;
             _otettraminoShiftVectors = new Vector2Int[4]
             {
                 new Vector2Int(0, 1),
@@ -49,11 +49,11 @@ namespace GameCore
             };
             #endregion
             #region Itetramino
-            _itetramino = new bool[4, 4];
-            _itetramino[1, 0] = true;
-            _itetramino[1, 1] = true;
-            _itetramino[1, 2] = true;
-            _itetramino[1, 3] = true;
+            _itetramino = new Tile[4, 4];
+            _itetramino[1, 0].State = true;
+            _itetramino[1, 1].State = true;
+            _itetramino[1, 2].State = true;
+            _itetramino[1, 3].State = true;
             _itettraminoShiftVectors = new Vector2Int[4]
             {
                 new Vector2Int(-1, 0),
@@ -63,11 +63,11 @@ namespace GameCore
             };
             #endregion
             #region Stetramino
-            _stetramino = new bool[4, 4];
-            _stetramino[1, 2] = true;
-            _stetramino[1, 3] = true;
-            _stetramino[2, 1] = true;
-            _stetramino[2, 2] = true;
+            _stetramino = new Tile[4, 4];
+            _stetramino[1, 2].State = true;
+            _stetramino[1, 3].State = true;
+            _stetramino[2, 1].State = true;
+            _stetramino[2, 2].State = true;
             _stettraminoShiftVectors = new Vector2Int[4]
             {
                 new Vector2Int(-1, 1),
@@ -77,11 +77,11 @@ namespace GameCore
             };
             #endregion
             #region Ztetramino
-            _ztetramino = new bool[4, 4];
-            _ztetramino[1, 1] = true;
-            _ztetramino[1, 2] = true;
-            _ztetramino[2, 2] = true;
-            _ztetramino[2, 3] = true;
+            _ztetramino = new Tile[4, 4];
+            _ztetramino[1, 1].State = true;
+            _ztetramino[1, 2].State = true;
+            _ztetramino[2, 2].State = true;
+            _ztetramino[2, 3].State = true;
             _ztettraminoShiftVectors = new Vector2Int[4]
             {
                 new Vector2Int(-1, 1),
@@ -91,11 +91,11 @@ namespace GameCore
             };
             #endregion
             #region Ltetramino
-            _ltetramino = new bool[4, 4];
-            _ltetramino[1, 1] = true;
-            _ltetramino[1, 2] = true;
-            _ltetramino[1, 3] = true;
-            _ltetramino[2, 1] = true;
+            _ltetramino = new Tile[4, 4];
+            _ltetramino[1, 1].State = true;
+            _ltetramino[1, 2].State = true;
+            _ltetramino[1, 3].State = true;
+            _ltetramino[2, 1].State = true;
             _ltettraminoShiftVectors = new Vector2Int[4]
             {
                 new Vector2Int(-1, 1),
@@ -105,11 +105,11 @@ namespace GameCore
             };
             #endregion
             #region Jtetramino
-            _jtetramino = new bool[4, 4];
-            _jtetramino[1, 1] = true;
-            _jtetramino[1, 2] = true;
-            _jtetramino[1, 3] = true;
-            _jtetramino[2, 3] = true;
+            _jtetramino = new Tile[4, 4];
+            _jtetramino[1, 1].State = true;
+            _jtetramino[1, 2].State = true;
+            _jtetramino[1, 3].State = true;
+            _jtetramino[2, 3].State = true;
             _jtettraminoShiftVectors = new Vector2Int[4]
             {
                 new Vector2Int(-1, 1),
@@ -119,11 +119,11 @@ namespace GameCore
             };
             #endregion
             #region Ttetramino
-            _ttetramino = new bool[4, 4];
-            _ttetramino[1, 1] = true;
-            _ttetramino[1, 2] = true;
-            _ttetramino[1, 3] = true;
-            _ttetramino[2, 2] = true;
+            _ttetramino = new Tile[4, 4];
+            _ttetramino[1, 1].State = true;
+            _ttetramino[1, 2].State = true;
+            _ttetramino[1, 3].State = true;
+            _ttetramino[2, 2].State = true;
             _ttettraminoShiftVectors = new Vector2Int[4]
             {
                 new Vector2Int(-1, 1),
@@ -150,10 +150,9 @@ namespace GameCore
             TetraminoShiftVectorsArray[6] = _ttettraminoShiftVectors;
         }
 
-        public bool[][,] TetraminoTypesArray { get; private set; }
+        public Tile[][,] TetraminoTypesArray { get; private set; }
 
         public Vector2Int[][] TetraminoShiftVectorsArray { get; private set; }
-
     }
 }
 
