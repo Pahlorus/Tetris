@@ -13,7 +13,12 @@ namespace GameView
         [SerializeField]
         private GameObject _board;
         [SerializeField]
+        private GameObject _pauseText;
+        [SerializeField]
+        private GameObject _gameOverText;
+        [SerializeField]
         private TileView _tilePref;
+
         private float _step = 0.64f;
         private float _shiftX = 5f;
         private float _shiftY = 11.5f;
@@ -55,6 +60,7 @@ namespace GameView
                 _game.GameStop();
                 enabled = false;
                 _gameState = false;
+                _pauseText.gameObject.SetActive(true);
             }
             
             else
@@ -62,6 +68,7 @@ namespace GameView
                 _game.GameRun();
                 enabled = true;
                 _gameState = true;
+                _pauseText.gameObject.SetActive(false);
             }
             
         }
@@ -93,6 +100,7 @@ namespace GameView
         private void _game_OnGameOver(object sender, EventArgs e)
         {
             enabled = false;
+            _gameOverText.gameObject.SetActive(true);
         }
 
         void TetraminoViewClear(TileView[,] tetraminoView)
