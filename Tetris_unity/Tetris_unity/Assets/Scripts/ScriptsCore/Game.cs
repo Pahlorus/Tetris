@@ -85,11 +85,7 @@ namespace GameCore
             _rotation = Rotation.Angle0;
             _activeTetraminoPos = _incomingTetraminoPos;
 
-            if (IsMoveable(_activeTetramino, _startPosition))
-            {
-                TetraminoMove(_startPosition);
-            }
-            else
+            if (!TryTetraminoMove(_startPosition))
             {
                 GameStop();
             }
@@ -107,11 +103,6 @@ namespace GameCore
                     }
                 }
             }
-        }
-
-        void TetraminoMove(Vector2Int direct)
-        {
-            _activeTetraminoPos = _activeTetraminoPos + direct;
         }
 
         bool IsCellHaveBlock(int y, int x)
@@ -159,23 +150,27 @@ namespace GameCore
             return result;
         }
 
-        bool IsMoveable(Tetramino activeTetramino, Vector2Int direct)
+        bool TryTetraminoMove(Vector2Int direct)
         {
             bool result = true;
-            Vector2Int Pos = _activeTetraminoPos;
+            Vector2Int checkingNewPos = _activeTetraminoPos + direct;
             for (int i = 0; i < 4; i++)
             {
                 for (int j = 0; j < 4; j++)
                 {
-                    if (!activeTetramino[j, i, _rotation])
+                    if (!_activeTetramino[j, i, _rotation])
                     {
                         continue;
                     }
-                    if ((j + Pos.y + direct.y >= _glassfulHigh || i + Pos.x + direct.x >= _glassfulWidth || i + Pos.x + direct.x < 0 || _glassful[j + Pos.y + direct.y, i + Pos.x + direct.x]))
+                    if ((j + checkingNewPos.y >= _glassfulHigh || i + checkingNewPos.x >= _glassfulWidth || i + checkingNewPos.x < 0 || _glassful[j + checkingNewPos.y, i + checkingNewPos.x]))
                     {
                         result = false;
                     }
                 }
+            }
+            if (result)
+            {
+                _activeTetraminoPos = checkingNewPos;
             }
             return result;
         }
@@ -215,11 +210,7 @@ namespace GameCore
 
         void Tick()
         {
-            if (IsMoveable(_activeTetramino, _down))
-            {
-                TetraminoMove(_down);
-            }
-            else
+            if (!TryTetraminoMove(_down))
             {
                 TetraminoInsert(_activeTetramino);
                 CheckFillingLineAndErase();
@@ -232,10 +223,7 @@ namespace GameCore
         {
             while (true)
             {
-                if (IsMoveable(_activeTetramino, direct))
-                {
-                    TetraminoMove(direct);
-                }
+                TryTetraminoMove(direct);
                 yield return new WaitForSeconds(0.1f);
             }
         }
