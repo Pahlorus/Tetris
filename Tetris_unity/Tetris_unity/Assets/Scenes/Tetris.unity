@@ -421,7 +421,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 7.58352
+  orthographic size: 7.739929
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -602,7 +602,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 1450150224}
-        m_MethodName: GameStop
+        m_MethodName: GameQuit
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -671,7 +671,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 920045397}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.065, y: -0.01, z: 0}
+  m_LocalPosition: {x: 0.065, y: -0.01, z: 1}
   m_LocalScale: {x: 2.155168, y: 1.5325054, z: 1}
   m_Children: []
   m_Father: {fileID: 1450150225}
