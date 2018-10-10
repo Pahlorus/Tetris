@@ -40,6 +40,7 @@ namespace GameCore
 
         public EventHandler onInsert;
         public EventHandler onRotate;
+        public EventHandler onGameOver;
 
         void Awake()
         {
@@ -79,16 +80,17 @@ namespace GameCore
 
         void NewTetraminoCreate()
         {
-            int tetraminoIndex = TetraminoIndexGenerate();
             _activeTetramino = _incomingTetramino;
-            _incomingTetramino = new Tetramino(_tetraminoTypes.TetraminoTypesArray[tetraminoIndex], _tetraminoTypes.TetraminoShiftVectorsArray[tetraminoIndex], _colorsArray[tetraminoIndex]);
-            _rotation = Rotation.Angle0;
             _activeTetraminoPos = _incomingTetraminoPos;
+            _rotation = Rotation.Angle0;
 
             if (!TryTetraminoMove(_startPosition))
             {
                 GameStop();
+                onGameOver?.Invoke(this, EventArgs.Empty);
             }
+            int tetraminoIndex = TetraminoIndexGenerate();
+            _incomingTetramino = new Tetramino(_tetraminoTypes.TetraminoTypesArray[tetraminoIndex], _tetraminoTypes.TetraminoShiftVectorsArray[tetraminoIndex], _colorsArray[tetraminoIndex]);
         }
 
         void TetraminoInsert(Tetramino activeTetramino)

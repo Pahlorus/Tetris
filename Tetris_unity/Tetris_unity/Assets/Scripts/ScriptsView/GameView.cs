@@ -17,6 +17,7 @@ namespace GameView
         private float _step = 0.64f;
         private float _shiftX = 5f;
         private float _shiftY = 11.5f;
+        private bool _gameState;
         private TileView[,] _activeTetramino;
         private TileView[,] _incomingTetramino;
         private TileView[,] _glassFul;
@@ -26,28 +27,49 @@ namespace GameView
         void Awake()
         {
             enabled = false;
+            _gameState = true;
             _tileList = new List<TileView>();
             _glassFul = new TileView[23, 10];
             _activeTetramino = new TileView[4, 4];
             _incomingTetramino = new TileView[4, 4];
-            StartGame();
+            GameStart();
             TetraminoViewSet(_game.IncomingTetramino, _incomingTetramino);
             TetraminoViewSet(_game.ActiveTetramino, _activeTetramino);
             enabled = true;
         }
 
-        public void StartGame()
+        public void GameStart()
         {
             _game = new GameObject("Game", typeof(Game)).GetComponent<Game>();
             _game.onInsert += _game_OnInsert;
             _game.onRotate += _game_OnRotate;
+            _game.onGameOver += _game_OnGameOver;
             _game.transform.SetParent(this.transform);
             _game.GameStart();
         }
 
-        public void StopGame()
+        public void GamePause()
+        {
+            if(_gameState)
+            {
+                _game.GameStop();
+                enabled = false;
+                _gameState = false;
+            }
+            
+            else
+            {
+                _game.GameRun();
+                enabled = true;
+                _gameState = true;
+            }
+            
+        }
+
+        public void GameQuit()
         {
             Destroy(_game.gameObject);
+            Application.Quit();
         }
 
         private void _game_OnRotate(object sender, EventArgs e)
@@ -58,11 +80,19 @@ namespace GameView
 
         private void _game_OnInsert(object sender, EventArgs e)
         {
-            TetraminoViewClear(_incomingTetramino);
-            TetraminoViewClear(_activeTetramino);
-            GlassFullReDraw();
-            TetraminoViewSet(_game.IncomingTetramino, _incomingTetramino);
-            TetraminoViewSet(_game.ActiveTetramino, _activeTetramino);
+            if(enabled)
+            {
+                TetraminoViewClear(_incomingTetramino);
+                TetraminoViewClear(_activeTetramino);
+                GlassFullReDraw();
+                TetraminoViewSet(_game.IncomingTetramino, _incomingTetramino);
+                TetraminoViewSet(_game.ActiveTetramino, _activeTetramino);
+            }
+        }
+
+        private void _game_OnGameOver(object sender, EventArgs e)
+        {
+            enabled = false;
         }
 
         void TetraminoViewClear(TileView[,] tetraminoView)
@@ -132,7 +162,6 @@ namespace GameView
              tile.transform.position = new Vector3(0, 0, 0);
             tile.gameObject.SetActive(false);
             _tileList.Add(tile);
-
         }
 
         void GlassFullReDraw()
@@ -171,11 +200,10 @@ namespace GameView
         {
             if (Input.GetKeyDown(KeyCode.Escape))
             {
-                StopGame();
+                GameQuit();
             }
             TetraminoTilesSetPosition(_activeTetramino, _game.ActiveTetraminoPos);
             TetraminoTilesSetPosition(_incomingTetramino, _game.IncomingTetraminoPos);
-
         }
     }
 }
