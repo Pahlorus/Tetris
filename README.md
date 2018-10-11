@@ -4,5 +4,5 @@ Training project. Visual interface the game based on UnityEngine.
 ![Image] (Tetris/tetris_screen.png)
 
 <p>
-    <img src="tetris_screen.png" width="220" height="240" />
+    <img src="tetris_screen.png" >
 </p>
