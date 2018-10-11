@@ -195,20 +195,14 @@ namespace GameView
                         ReturnTile(_glassFul[j, i]);
                         _glassFul[j, i] = null;
                     }
-                }
-            }
 
-            for (int j = 0; j < 23; j++)
-            {
-                for (int i = 0; i < 10; i++)
-                {
                     if (_game.GlassFull[j, i].State)
                     {
                         int colorIndex = _game.GlassFull[j, i].Color;
                         _glassFul[j, i] = GetTile(_colorsArray[colorIndex]);
 
-                        float x = (_step * i) - _shiftX * _step + 0.32f;
-                        float y = -(_step * j) + _shiftY * _step - 0.32f; ;
+                        float x = _step * (i - _shiftX + 0.5f);
+                        float y = _step * (-j + _shiftY - 0.5f);
                         _glassFul[j, i].transform.position = new Vector3(x, y);
                     }
                 }
