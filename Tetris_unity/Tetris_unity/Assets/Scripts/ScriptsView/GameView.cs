@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
 using GameCore;
@@ -23,6 +20,8 @@ namespace GameView
         private Text _score;
         [SerializeField]
         private Text _lineCount;
+        [SerializeField]
+        private Text _level;
         [SerializeField]
         private GameObject _tilePref;
 
@@ -102,6 +101,7 @@ namespace GameView
                 TetraminoViewSet(_game.ActiveTetramino, _activeTetramino);
                 _score.text = "Score: "+_game.Score.ToString();
                 _lineCount.text = "Lines : "+_game.LineCount.ToString();
+                _level.text = "Level: " + _game.CurrentLevel.ToString();
             }
         }
 
@@ -111,7 +111,7 @@ namespace GameView
             _gameOverText.gameObject.SetActive(true);
         }
 
-        void TetraminoViewClear(GameObject[,] tetraminoView)
+        private void TetraminoViewClear(GameObject[,] tetraminoView)
         {
             for (int i = 0; i < 4; i++)
             {
@@ -126,7 +126,7 @@ namespace GameView
             }
         }
 
-        void TetraminoViewSet(Tetramino tetramino, GameObject[,] tetraminoView)
+        private void TetraminoViewSet(Tetramino tetramino, GameObject[,] tetraminoView)
         {
             for (int i = 0; i < 4; i++)
             {
@@ -141,7 +141,7 @@ namespace GameView
             }
         }
 
-        void TetraminoTilesSetPosition(GameObject[,] tetraminoView, Vector2Int Pos)
+        private void TetraminoTilesSetPosition(GameObject[,] tetraminoView, Vector2Int Pos)
         {
             for (int i = 0; i < 4; i++)
             {
@@ -157,7 +157,7 @@ namespace GameView
             }
         }
 
-        GameObject GetTile(Color32 color)
+        private GameObject GetTile(Color32 color)
         {
             GameObject tile;
             if (_tileList.Count ==0)
@@ -175,14 +175,14 @@ namespace GameView
             }
             return tile;
         }
-        void ReturnTile(GameObject tile)
+        private void ReturnTile(GameObject tile)
         {
              tile.transform.position = new Vector3(0, 0, 0);
             tile.gameObject.SetActive(false);
             _tileList.Add(tile);
         }
 
-        void GlassFullReDraw()
+        private void GlassFullReDraw()
         {
             Vector2Int activePos = _game.ActiveTetraminoPos;
 

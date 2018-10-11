@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace GameCore
@@ -16,8 +15,11 @@ namespace GameCore
         private int _initialPosY = 0;
         private int _score;
         private int _lineCount;
-        private int[] _scoreMultiplier = new int[5] {10, 100, 300, 700, 1500 };
-        private float _tickTime = 1f;
+        private int _currentLevel;
+        private float[] _tickTimesArray = new float[11] {1.0f, 0.9f,  0.8f, 0.7f, 0.6f, 0.5f, 0.4f, 0.3f, 0.2f, 0.1f, 0.06f };
+        private int[] _scoreMultiplier = new int[5] { 10, 100, 300, 700, 1500 };
+        private float _boostTime = 0.04f;
+        private float _tickTime;
         private float _elapsedTime = 0f;
 
         private Tile[,] _glassful;
@@ -35,6 +37,8 @@ namespace GameCore
 
         public int Score { get { return _score; } }
         public int LineCount { get { return _lineCount; } }
+        public int CurrentLevel { get { return _currentLevel; } }
+
         public Tile[,] GlassFull { get { return _glassful; } }
         public Tetramino ActiveTetramino { get { return _activeTetramino; } }
         public Tetramino IncomingTetramino { get { return _incomingTetramino; } }
@@ -48,6 +52,8 @@ namespace GameCore
 
         void Awake()
         {
+            _currentLevel = 0;
+            _tickTime = _tickTimesArray[_currentLevel];
             _down.y = _step;
             _left.x = -_step;
             _right.x = _step;
@@ -218,6 +224,16 @@ namespace GameCore
             _lineCount += lineCount;
         }
 
+        void TickTimeUp()
+        {
+            _tickTime = _tickTimesArray[_currentLevel];
+        }
+        void LevelUp()
+        {
+            _currentLevel = _lineCount/10;
+        }
+
+
         void Tick()
         {
             if (!TryTetraminoMove(_down))
@@ -225,6 +241,8 @@ namespace GameCore
                 TetraminoInsert(_activeTetramino);
                 CheckFillingLineAndErase();
                 NewTetraminoCreate();
+                TickTimeUp();
+                LevelUp();
                 onInsert?.Invoke(this, EventArgs.Empty);
             }
         }
@@ -243,13 +261,13 @@ namespace GameCore
             _elapsedTime += Time.deltaTime;
             if (Input.GetKeyDown(KeyCode.DownArrow))
             {
-                _tickTime = 0.05f;
-                _elapsedTime = 0.05f;
+                _tickTime = _boostTime;
+                _elapsedTime = _boostTime;
             }
 
             if (Input.GetKeyUp(KeyCode.DownArrow))
             {
-                _tickTime = 1f;
+                _tickTime = _tickTimesArray[_currentLevel];
                 _elapsedTime = 0f;
             }
 
