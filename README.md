@@ -1,3 +1,3 @@
 # Tetris 
 Training project. Visual interface the game based on UnityEngine.
-![Image] (tetris_screen.png)
+![Image] (https://github.com/Pahlorus/Tetris/blob/master/Tetris_unity/Tetris_unity/tetris_screen.png)
