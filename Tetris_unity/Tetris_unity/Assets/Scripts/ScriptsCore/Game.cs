@@ -83,12 +83,12 @@ namespace GameCore
             enabled = false;
         }
 
-        int TetraminoIndexGenerate()
+        private int TetraminoIndexGenerate()
         {
             return UnityEngine.Random.Range(0, _tetraminoTypes.TetraminoTypesArray.Length);
         }
 
-        void NewTetraminoCreate()
+        private void NewTetraminoCreate()
         {
             _activeTetramino = _incomingTetramino;
             _activeTetraminoPos = _incomingTetraminoPos;
@@ -103,7 +103,7 @@ namespace GameCore
             _incomingTetramino = new Tetramino(_tetraminoTypes.TetraminoTypesArray[tetraminoIndex], _tetraminoTypes.TetraminoShiftVectorsArray[tetraminoIndex], tetraminoIndex);
         }
 
-        void TetraminoInsert(Tetramino activeTetramino)
+        private void TetraminoInsert(Tetramino activeTetramino)
         {
             for (int i = 0; i < 4; i++)
             {
@@ -118,7 +118,7 @@ namespace GameCore
             }
         }
 
-        bool IsCellHaveBlock(int y, int x)
+        private bool IsCellHaveBlock(int y, int x)
         {
             bool isCheckActiveTetraminoBlocks = false;
             bool isCheckNextTetraminoBlocks = false;
@@ -133,7 +133,7 @@ namespace GameCore
             return _glassful[y, x].State || isCheckActiveTetraminoBlocks || isCheckNextTetraminoBlocks;
         }
 
-        bool TryTetraminoRotate(Tetramino activeTetramino)
+        private bool TryTetraminoRotate(Tetramino activeTetramino)
         {
             bool result = true;
             Rotation checkingRotation = (Rotation)(((int)_rotation + 1) % 4);
@@ -162,7 +162,7 @@ namespace GameCore
             return result;
         }
 
-        bool TryTetraminoMove(Vector2Int direct)
+        private bool TryTetraminoMove(Vector2Int direct)
         {
             bool result = true;
             Vector2Int checkingNewPos = _activeTetraminoPos + direct;
@@ -187,7 +187,7 @@ namespace GameCore
             return result;
         }
 
-        void LineEraseAndShiftGlassfull(int line)
+        private void LineEraseAndShiftGlassfull(int line)
         {
             for (int j = line; j >= _startPosition.y; j--)
             {
@@ -198,7 +198,7 @@ namespace GameCore
             }
         }
 
-        void CheckFillingLineAndErase()
+        private void CheckFillingLineAndErase()
         {
             int lineCount = 0;
             bool isFillingLine;
@@ -224,7 +224,7 @@ namespace GameCore
             _lineCount += lineCount;
         }
 
-        void TickTimeUp()
+        private void TickTimeUp()
         {
             _tickTime = _tickTimesArray[_currentLevel];
         }
@@ -235,7 +235,7 @@ namespace GameCore
         }
 
 
-        void Tick()
+        private void Tick()
         {
             if (!TryTetraminoMove(_down))
             {
@@ -248,7 +248,7 @@ namespace GameCore
             }
         }
 
-        IEnumerator MoveWithDelay(Vector2Int direct)
+        private IEnumerator MoveWithDelay(Vector2Int direct)
         {
             while (true)
             {

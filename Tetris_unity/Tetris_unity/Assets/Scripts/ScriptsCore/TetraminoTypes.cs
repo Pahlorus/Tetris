@@ -29,7 +29,7 @@ namespace GameCore
         private Vector2Int[] _jtettraminoShiftVectors;
         private Vector2Int[] _ttettraminoShiftVectors;
 
-        public TetraminoTypes()
+        internal TetraminoTypes()
         {
             TetraminoTypesArray = new Tile[7][,];
             TetraminoShiftVectorsArray = new Vector2Int[7][];
@@ -150,9 +150,9 @@ namespace GameCore
             TetraminoShiftVectorsArray[6] = _ttettraminoShiftVectors;
         }
 
-        public Tile[][,] TetraminoTypesArray { get; private set; }
+        internal Tile[][,] TetraminoTypesArray { get; private set; }
 
-        public Vector2Int[][] TetraminoShiftVectorsArray { get; private set; }
+        internal Vector2Int[][] TetraminoShiftVectorsArray { get; private set; }
     }
 }
 

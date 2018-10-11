@@ -10,17 +10,17 @@ namespace GameCore
         private int _size = 4;
         private Tile[,] _tetramino;
 
-        public Tetramino(Tile[,] tetraminoType, Vector2Int[] tetraminoShiftVectors, int colorIndex)
+        internal Tetramino(Tile[,] tetraminoType, Vector2Int[] tetraminoShiftVectors, int colorIndex)
         {
             _tetramino = tetraminoType;
             ShiftVector = tetraminoShiftVectors;
             Color = colorIndex;
             ColorSet(colorIndex);
         }
-        public int Color { get; private set; }
-        public Vector2Int[] ShiftVector { get; private set; }
+        internal int Color { get; private set; }
+        internal Vector2Int[] ShiftVector { get; private set; }
 
-        public Tile this[int y, int x, Rotation rot]
+        internal Tile this[int y, int x, Rotation rot]
         {
             get
             {

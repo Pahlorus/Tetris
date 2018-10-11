@@ -12,12 +12,12 @@ namespace GameCore
         private bool _state;
         private int _colorIndex;
 
-        public bool State
+        internal bool State
         {
             get { return _state; }
             set { _state = value; }
         }
-        public int Color
+        internal int Color
         {
             get { return _colorIndex; }
             set { _colorIndex = value; }
