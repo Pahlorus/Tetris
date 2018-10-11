@@ -230,6 +230,7 @@ namespace GameCore
         }
         void LevelUp()
         {
+            if (_currentLevel<10)
             _currentLevel = _lineCount/10;
         }
 
