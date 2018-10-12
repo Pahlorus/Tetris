@@ -9,7 +9,7 @@ namespace GameView
     class GameView : MonoBehaviour
     {
         [SerializeField]
-        Color32[] _colorsArray;
+        private Color32[] _colorsArray;
         [SerializeField]
         private GameObject _board;
         [SerializeField]
@@ -23,26 +23,28 @@ namespace GameView
         [SerializeField]
         private Text _level;
         [SerializeField]
-        private GameObject _tilePref;
-
+        private TileView _tilePref;
+        private int _glassfulHigh = 23;
+        private int _glassfulWidth = 10;
+        private int _size = 4;
         private float _step = 0.64f;
         private float _shiftX = 5f;
         private float _shiftY = 11.5f;
         private bool _gameState;
-        private GameObject [,] _activeTetramino;
-        private GameObject[,] _incomingTetramino;
-        private GameObject[,] _glassFul;
-        private List<GameObject> _tileList;
+        private TileView[,] _activeTetramino;
+        private TileView[,] _incomingTetramino;
+        private TileView[,] _glassFul;
+        private List<TileView> _tileList;
         private Game _game;
 
         void Awake()
         {
             enabled = false;
             _gameState = true;
-            _tileList = new List<GameObject>();
-            _glassFul = new GameObject[23, 10];
-            _activeTetramino = new GameObject[4, 4];
-            _incomingTetramino = new GameObject [4, 4];
+            _tileList = new List<TileView>();
+            _glassFul = new TileView[_glassfulHigh, _glassfulWidth];
+            _activeTetramino = new TileView[_size, _size];
+            _incomingTetramino = new TileView[_size, _size];
             GameStart();
             TetraminoViewSet(_game.IncomingTetramino, _incomingTetramino);
             TetraminoViewSet(_game.ActiveTetramino, _activeTetramino);
@@ -61,14 +63,13 @@ namespace GameView
 
         public void GamePause()
         {
-            if(_gameState)
+            if (_gameState)
             {
                 _game.GameStop();
                 enabled = false;
                 _gameState = false;
                 _pauseText.gameObject.SetActive(true);
             }
-            
             else
             {
                 _game.GameRun();
@@ -92,15 +93,15 @@ namespace GameView
 
         private void _game_OnInsert(object sender, EventArgs e)
         {
-            if(enabled)
+            if (enabled)
             {
                 TetraminoViewClear(_incomingTetramino);
                 TetraminoViewClear(_activeTetramino);
                 GlassFullReDraw();
                 TetraminoViewSet(_game.IncomingTetramino, _incomingTetramino);
                 TetraminoViewSet(_game.ActiveTetramino, _activeTetramino);
-                _score.text = "Score: "+_game.Score.ToString();
-                _lineCount.text = "Lines : "+_game.LineCount.ToString();
+                _score.text = "Score: " + _game.Score.ToString();
+                _lineCount.text = "Lines : " + _game.LineCount.ToString();
                 _level.text = "Level: " + _game.CurrentLevel.ToString();
             }
         }
@@ -111,11 +112,11 @@ namespace GameView
             _gameOverText.gameObject.SetActive(true);
         }
 
-        private void TetraminoViewClear(GameObject[,] tetraminoView)
+        private void TetraminoViewClear(TileView[,] tetraminoView)
         {
-            for (int i = 0; i < 4; i++)
+            for (int i = 0; i < _size; i++)
             {
-                for (int j = 0; j < 4; j++)
+                for (int j = 0; j < _size; j++)
                 {
                     if (tetraminoView[j, i])
                     {
@@ -126,11 +127,11 @@ namespace GameView
             }
         }
 
-        private void TetraminoViewSet(Tetramino tetramino, GameObject[,] tetraminoView)
+        private void TetraminoViewSet(Tetramino tetramino, TileView[,] tetraminoView)
         {
-            for (int i = 0; i < 4; i++)
+            for (int i = 0; i < _size; i++)
             {
-                for (int j = 0; j < 4; j++)
+                for (int j = 0; j < _size; j++)
                 {
                     if (tetramino[j, i, _game.Rotation].State)
                     {
@@ -141,11 +142,11 @@ namespace GameView
             }
         }
 
-        private void TetraminoTilesSetPosition(GameObject[,] tetraminoView, Vector2Int Pos)
+        private void TetraminoTilesSetPosition(TileView[,] tetraminoView, Vector2Int Pos)
         {
-            for (int i = 0; i < 4; i++)
+            for (int i = 0; i < _size; i++)
             {
-                for (int j = 0; j < 4; j++)
+                for (int j = 0; j < _size; j++)
                 {
                     float x = _step * (Pos.x + i - _shiftX + 0.5f);
                     float y = _step * (-Pos.y - j + _shiftY - 0.5f);
@@ -157,28 +158,26 @@ namespace GameView
             }
         }
 
-        private GameObject GetTile(Color32 color)
+        private TileView GetTile(Color32 color)
         {
-            GameObject tile;
-            if (_tileList.Count ==0)
+            TileView tile;
+            if (_tileList.Count == 0)
             {
                 tile = Instantiate(_tilePref, _board.transform);
                 tile.transform.localScale = Vector3.one;
-                tile.GetComponent<SpriteRenderer>().color = color;
+                tile.SpriteRenderer.color = color;
             }
             else
             {
                 tile = _tileList[0];
-                tile.GetComponent<SpriteRenderer>().color = color;
-                tile.gameObject.SetActive(true);
-               _tileList.RemoveAt(0);
+                tile.SpriteRenderer.color = color;
+                _tileList.RemoveAt(0);
             }
             return tile;
         }
-        private void ReturnTile(GameObject tile)
-        {
-             tile.transform.position = new Vector3(0, 0, 0);
-            tile.gameObject.SetActive(false);
+        private void ReturnTile(TileView tile)
+        {   // Tetramino out of sight of camera.
+            tile.transform.position = new Vector3(0, 0, -100);
             _tileList.Add(tile);
         }
 
@@ -186,9 +185,9 @@ namespace GameView
         {
             Vector2Int activePos = _game.ActiveTetraminoPos;
 
-            for (int j = 0; j < 23; j++)
+            for (int j = 0; j < _glassfulHigh; j++)
             {
-                for (int i = 0; i < 10; i++)
+                for (int i = 0; i < _glassfulWidth; i++)
                 {
                     if (_glassFul[j, i])
                     {

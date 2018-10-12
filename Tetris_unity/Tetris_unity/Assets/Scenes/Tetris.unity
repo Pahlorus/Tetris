@@ -1071,7 +1071,8 @@ MonoBehaviour:
   _score: {fileID: 1963205600}
   _lineCount: {fileID: 2023902148}
   _level: {fileID: 75287541}
-  _tilePref: {fileID: 1241222577420512, guid: 3c521a481ba663343b38d64da77065a3, type: 2}
+  _tilePref: {fileID: 114518907728139190, guid: 3c521a481ba663343b38d64da77065a3,
+    type: 2}
 --- !u!4 &1450150225
 Transform:
   m_ObjectHideFlags: 0

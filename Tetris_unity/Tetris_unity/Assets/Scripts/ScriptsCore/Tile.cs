@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace GameCore
 {
-    struct Tile
+    internal struct Tile
     {
         private bool _state;
         private int _colorIndex;
